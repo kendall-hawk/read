@@ -1,9 +1,14 @@
-window.EnglishSite = window.EnglishSite || {};
+Window.EnglishSite = window.EnglishSite || {};
 
 EnglishSite.Glossary = (() => {
     let _contentArea = null;
     let _glossaryPopup = null;
     let _currentGlossaryData = {};
+    let _cachedGlossaryData = new Map(); // 新增：用于缓存已加载的章节词汇数据 ⚡
+
+    // 新增：用于正确移除匿名函数监听器
+    let _popupClickStopPropagationHandler = null; 
+    let _contentAreaClickHandler = null; // 新增：用于事件委托的处理器
 
     /**
      * 初始化词汇表模块。
@@ -27,34 +32,54 @@ EnglishSite.Glossary = (() => {
         // 每次初始化前清理，确保新的章节加载时是干净的状态
         cleanup(); 
 
-        try {
-            const response = await fetch(`data/terms_${chapterId}.json`);
-            if (response.ok) {
-                _currentGlossaryData = await response.json();
-                console.log(`[Glossary] Loaded ${Object.keys(_currentGlossaryData).length} terms for chapter ${chapterId}.`);
-            } else {
-                console.warn(`[Glossary] No glossary data found for chapter "${chapterId}". Path: data/terms_${chapterId}.json`);
-                _currentGlossaryData = {}; // 没有找到数据，清空当前词汇数据
+        // 检查缓存 ⚡
+        if (_cachedGlossaryData.has(chapterId)) {
+            _currentGlossaryData = _cachedGlossaryData.get(chapterId);
+            console.log(`[Glossary] Loaded ${Object.keys(_currentGlossaryData).length} terms for chapter ${chapterId} from cache.`);
+        } else {
+            try {
+                const response = await fetch(`data/terms_${chapterId}.json`);
+                if (response.ok) {
+                    _currentGlossaryData = await response.json();
+                    _cachedGlossaryData.set(chapterId, _currentGlossaryData); // 缓存数据
+                    console.log(`[Glossary] Loaded ${Object.keys(_currentGlossaryData).length} terms for chapter ${chapterId} from network.`);
+                } else {
+                    console.warn(`[Glossary] No glossary data found for chapter "${chapterId}". Path: data/terms_${chapterId}.json`);
+                    _currentGlossaryData = {}; // 没有找到数据，清空当前词汇数据
+                    _cachedGlossaryData.set(chapterId, {}); // 即使是空数据也缓存，避免重复失败请求
+                }
+            } catch (e) {
+                console.error('[Glossary] Failed to initialize:', e);
+                _currentGlossaryData = {}; // 出现错误时清空数据
+                _cachedGlossaryData.set(chapterId, {}); // 错误也缓存，避免重复失败请求
             }
+        }
 
-            // 为所有带有 glossary-term 类的元素添加点击监听器
-            _contentArea.querySelectorAll('.glossary-term').forEach(el =>
-                el.addEventListener('click', handleTermClick)
-            );
-
-            // 添加全局点击事件以关闭弹出框
-            document.addEventListener('click', handleDocumentClick);
-            // 阻止弹出框内部点击事件冒泡，防止点击弹出框时关闭
-            _glossaryPopup.addEventListener('click', e => e.stopPropagation());
-
-            // 关闭按钮事件监听器
-            const closeBtn = _glossaryPopup.querySelector('.close-button');
-            if (closeBtn) {
-                closeBtn.addEventListener('click', hidePopup);
+        // 使用事件委托：只在 _contentArea 上添加一个监听器 🚀
+        _contentAreaClickHandler = (event) => {
+            let target = event.target;
+            // 向上遍历DOM树，查找是否点击了 .glossary-term 或其内部
+            while (target && target !== _contentArea) {
+                if (target.classList.contains('glossary-term')) {
+                    handleTermClick(event, target); // 将 target 传入，作为实际被点击的词汇元素
+                    return; // 找到并处理后即可返回
+                }
+                target = target.parentNode;
             }
-        } catch (e) {
-            console.error('[Glossary] Failed to initialize:', e);
-            _currentGlossaryData = {}; // 出现错误时清空数据
+        };
+        _contentArea.addEventListener('click', _contentAreaClickHandler);
+
+        // 添加全局点击事件以关闭弹出框
+        document.addEventListener('click', handleDocumentClick);
+
+        // 阻止弹出框内部点击事件冒泡，防止点击弹出框时关闭
+        _popupClickStopPropagationHandler = e => e.stopPropagation(); // 保存引用以便后续移除
+        _glossaryPopup.addEventListener('click', _popupClickStopPropagationHandler);
+
+        // 关闭按钮事件监听器
+        const closeBtn = _glossaryPopup.querySelector('.close-button');
+        if (closeBtn) {
+            closeBtn.addEventListener('click', hidePopup);
         }
     };
 
@@ -62,23 +87,26 @@ EnglishSite.Glossary = (() => {
      * 清理词汇表模块，移除事件监听器并隐藏弹出框。
      */
     const cleanup = () => {
-        if (_contentArea) {
-            // 移除所有词汇元素的点击监听器
-            _contentArea.querySelectorAll('.glossary-term').forEach(el =>
-                el.removeEventListener('click', handleTermClick)
-            );
+        if (_contentArea && _contentAreaClickHandler) {
+            // 移除事件委托监听器 🚀
+            _contentArea.removeEventListener('click', _contentAreaClickHandler);
+            _contentAreaClickHandler = null;
         }
         // 移除文档级的点击监听器
         document.removeEventListener('click', handleDocumentClick);
-        // 移除弹出框内部的点击冒泡阻止
-        if (_glossaryPopup) {
-             _glossaryPopup.removeEventListener('click', e => e.stopPropagation());
-            // 移除关闭按钮的点击监听器
-            const closeBtn = _glossaryPopup.querySelector('.close-button');
-            if (closeBtn) {
-                closeBtn.removeEventListener('click', hidePopup);
-            }
+        
+        // 移除弹出框内部的点击冒泡阻止 (使用保存的引用)
+        if (_glossaryPopup && _popupClickStopPropagationHandler) {
+             _glossaryPopup.removeEventListener('click', _popupClickStopPropagationHandler);
+             _popupClickStopPropagationHandler = null;
         }
+        
+        // 移除关闭按钮的点击监听器
+        const closeBtn = _glossaryPopup.querySelector('.close-button');
+        if (closeBtn) {
+            closeBtn.removeEventListener('click', hidePopup);
+        }
+        
         hidePopup(); // 隐藏当前的弹出框
         _currentGlossaryData = {}; // 清空当前章节的词汇数据
         console.log('[Glossary] Cleaned up.');
@@ -100,7 +128,7 @@ EnglishSite.Glossary = (() => {
         if (_glossaryPopup &&
             _glossaryPopup.style.display === 'block' &&
             !_glossaryPopup.contains(event.target) &&
-            !event.target.classList.contains('glossary-term')
+            !event.target.classList.contains('glossary-term') // 保持这个条件，确保点击词汇不关闭弹出框
         ) {
             hidePopup();
         }
@@ -109,11 +137,11 @@ EnglishSite.Glossary = (() => {
     /**
      * 处理词汇点击事件，显示词汇表弹出框。
      * @param {Event} event - 点击事件对象。
+     * @param {HTMLElement} termElement - 实际被点击的词汇DOM元素 (由事件委托传入)。
      */
-    const handleTermClick = (event) => {
+    const handleTermClick = (event, termElement) => { // 调整签名，接收 termElement
         event.stopPropagation(); // 阻止事件冒泡到 document，避免立即关闭弹出框
 
-        const termElement = event.currentTarget;
         const word = termElement.dataset.word; // 从HTML获取单词 (例如 'run')
         const context = termElement.dataset.context; // 从HTML获取语境 (例如 'sport', 'technology', 'default')
 
@@ -220,7 +248,7 @@ EnglishSite.Glossary = (() => {
         }
         if (displayEntry.rootsAndAffixes) {
             html += `<p class="glossary-roots"><strong>Roots & Affixes:</strong> ${displayEntry.rootsAndAffixes}</p>`;
-}
+        }
 
         html += `</div>`; // 关闭释义块
 
@@ -239,29 +267,33 @@ EnglishSite.Glossary = (() => {
         const popupWidth = _glossaryPopup.offsetWidth;   // 弹出框的宽度
         const popupHeight = _glossaryPopup.offsetHeight; // 弹出框的高度
 
-        let top = rect.bottom + window.scrollY + 5; // 默认：弹出框顶部在点击元素底部下方5px
-        let left = rect.left + window.scrollX;      // 默认：弹出框左边与点击元素左边对齐
+        // 默认位置：在点击元素下方，水平居中于点击元素
+        let left = rect.left + window.scrollX + (rect.width / 2) - (popupWidth / 2);
+        let top = rect.bottom + window.scrollY + 5;
 
-        // 边界检查：确保弹出框不会超出视口右边界
-        if (left + popupWidth > window.innerWidth + window.scrollX) {
-            left = window.innerWidth + window.scrollX - popupWidth - 10; // 调整到右侧，留10px边距
-            // 如果调整后仍然超出左边界（页面太窄），则靠左边显示
-            if (left < window.scrollX) {
-                 left = window.scrollX + 10;
-            }
+        // 水平边界检查 💡
+        const viewportRight = window.innerWidth + window.scrollX;
+        const viewportLeft = window.scrollX;
+
+        // 确保不会超出右边界
+        if (left + popupWidth > viewportRight - 10) { 
+            left = viewportRight - popupWidth - 10;
+        }
+        // 确保不会超出左边界
+        if (left < viewportLeft + 10) { 
+            left = viewportLeft + 10;
         }
 
-        // 边界检查：确保弹出框不会超出视口左边界
-        if (left < window.scrollX) {
-            left = window.scrollX + 10; // 调整到左侧，留10px边距
-        }
+        // 垂直边界检查 💡
+        const viewportBottom = window.innerHeight + window.scrollY;
+        const viewportTop = window.scrollY;
 
-        // 边界检查：确保弹出框不会超出视口下边界
-        if (top + popupHeight > window.innerHeight + window.scrollY) {
-            top = rect.top + window.scrollY - popupHeight - 5; // 如果下方空间不够，则显示在点击元素上方5px
-            // 如果上方空间也不够（元素在页面顶部），则靠顶部显示
-            if (top < window.scrollY) {
-                top = window.scrollY + 10;
+        // 如果下方空间不够，尝试显示在点击元素上方
+        if (top + popupHeight > viewportBottom - 10) { 
+            top = rect.top + window.scrollY - popupHeight - 5;
+            // 如果上方空间也不够，则靠顶部显示
+            if (top < viewportTop + 10) {
+                top = viewportTop + 10;
             }
         }
 
