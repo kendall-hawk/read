@@ -218,6 +218,9 @@ EnglishSite.Glossary = (() => {
         if (displayEntry.lastUpdated) {
             html += `<p class="glossary-last-updated"><strong>Last Updated:</strong> ${displayEntry.lastUpdated}</p>`;
         }
+        if (displayEntry.rootsAndAffixes) {
+            html += `<p class="glossary-roots"><strong>Roots & Affixes:</strong> ${displayEntry.rootsAndAffixes}</p>`;
+}
 
         html += `</div>`; // 关闭释义块
 
