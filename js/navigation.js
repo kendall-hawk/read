@@ -71,9 +71,17 @@ EnglishSite.Navigation = (() => {
 
             // 找到所属的系列并激活它
             const chapterId = linkElement.dataset.chapterId;
-            const correspondingSeries = _navData.flatMap(s => s.chapters).find(c => c.id === chapterId);
-            if (correspondingSeries) {
-                const seriesLink = _navContainer.querySelector(`a[data-series-id="${correspondingSeries.seriesId}"]`);
+            // 找到所属系列的ID，注意这里需要遍历 _navData 来找到章节所属的系列
+            let seriesIdForChapter = null;
+            for(const series of _navData) {
+                if (series.chapters.some(c => c.id === chapterId)) {
+                    seriesIdForChapter = series.seriesId;
+                    break;
+                }
+            }
+
+            if (seriesIdForChapter) {
+                const seriesLink = _navContainer.querySelector(`a[data-series-id="${seriesIdForChapter}"]`);
                 if (seriesLink) {
                     seriesLink.classList.add('active');
                 }
@@ -119,7 +127,7 @@ EnglishSite.Navigation = (() => {
         const currentHash = window.location.hash.substring(1); // 移除 #
 
         let initialLoadType = 'series'; // 默认加载第一个系列
-        let initialLoadId = allSeries[0]?.seriesId;
+        let initialLoadId = allSeries[0]?.seriesId; // 默认第一个系列的ID
 
         if (currentHash.startsWith('series=')) {
             initialLoadType = 'series';
@@ -146,10 +154,9 @@ EnglishSite.Navigation = (() => {
             if (selectedChapter) {
                 // 加载单个章节内容
                 loadChapterContent(selectedChapter.id, selectedChapter.audio);
-                const chapterLink = _navContainer.querySelector(`a[data-chapter-id="${selectedChapter.id}"]`); // 注意：此时导航里没有章节链接
-                // 如果需要激活导航中的系列，需要根据章节找到对应的系列ID
+                // 激活所属系列
                 const seriesLinkForChapter = _navContainer.querySelector(`a[data-series-id="${selectedChapter.seriesId}"]`);
-                setActiveSeriesLink(seriesLinkForChapter); // 激活所属系列
+                setActiveSeriesLink(seriesLinkForChapter);
                 // 更新浏览器URL状态
                 history.replaceState({ type: 'chapter', id: selectedChapter.id }, '', `#${selectedChapter.id}`);
             } else {
