@@ -64,19 +64,21 @@ EnglishSite.Glossary = (() => {
 
         const termElement = event.currentTarget;
         const word = termElement.dataset.word;
-        const context = termElement.dataset.context; // 获取上下文
+        // 获取 HTML 元素上的 data-context 属性
+        const context = termElement.dataset.context; 
 
         if (word && _glossaryData[word]) {
-            const termData = _glossaryData[word]; // Get all data for the term
+            const termData = _glossaryData[word]; 
+            let currentDefinition = termData.definition; // 默认使用主定义
 
-            // Select definition based on context, or fall back to default
-            let currentDefinition = termData.definition;
-            if (context && termData.contextualMeaning && termData.contextualMeaning.hasOwnProperty(context)) {
-                // Modified: Using contextualMeaning as an object with context keys
-                currentDefinition = termData.contextualMeaning[context];
-            } else if (termData.definition) {
+            // 检查是否存在上下文相关的释义
+            if (context && termData.contextualMeaning && typeof termData.contextualMeaning === 'object' && termData.contextualMeaning.hasOwnProperty(context)) {
+                currentDefinition = termData.contextualMeaning[context]; // 如果找到上下文释义，则使用它
+            }
+            // 如果 `contextualMeaning` 不存在、不是对象或者没有匹配的上下文，`currentDefinition` 将保持为 `termData.definition`。
+            if (!currentDefinition && termData.definition) { // Fallback if contextual def is empty
                 currentDefinition = termData.definition;
-            } else {
+            } else if (!currentDefinition) { // Final fallback
                 currentDefinition = "Definition not available.";
             }
 
