@@ -1,37 +1,39 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html lang="zh">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>我的英语学习网站</title>
-    <link rel="stylesheet" href="css/style.css">
+    <title>英语学习网站</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="js/audio-sync.js" defer></script>
+    <script src="js/glossary.js" defer></script>
+    <script src="js/navigation.js" defer></script>
+    <script src="js/main.js" defer></script>
 </head>
 <body>
-    <header>
-        <h1>英语学习伴侣</h1>
-        <p>通过沉浸式内容和交互式词汇提升您的英语水平。</p>
+    <header class="site-header">
+        <h1>英语学习平台</h1>
     </header>
 
     <div class="container">
-        <aside id="main-nav">
-            <h2>章节导航</h2>
-            </aside>
+        <nav id="main-nav" class="main-nav">
+            </nav>
 
-        <main id="content">
-            <p>请从左侧导航栏选择一个章节开始学习。</p>
+        <main id="content" class="main-content">
+            <p>加载中...</p>
         </main>
     </div>
 
     <div id="glossary-popup" class="glossary-popup">
+        <div class="glossary-popup-header">
+            <span id="glossary-word"></span>
+            <button id="close-glossary-popup" class="close-btn">&times;</button>
         </div>
+        <div id="glossary-definition" class="glossary-popup-body"></div>
+    </div>
 
-    <footer>
-        <p>&copy; 2025 我的英语学习网站. 保留所有权利。</p>
+    <footer class="site-footer">
+        <p>&copy; 2025 英语学习平台. All rights reserved.</p>
     </footer>
-
-    <script src="js/navigation.js"></script>
-    <script src="js/glossary.js"></script>
-    <script src="js/audio-sync.js"></script>
-    <script src="js/main.js"></script> </body>
+</body>
 </html>
-
