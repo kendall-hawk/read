@@ -212,7 +212,7 @@ EnglishSite.Glossary = (() => {
         }
 
         if (displayEntry.frequency !== undefined) { // frequency 可能是 0，所以不能用truthy check
-            html += `<p class="glossary-frequency"><strong>Frequency:</strong> ${displayEntry.frequency}</p>`;
+            html += `<p class="glossary-frequency"><strong>Frequency:</strong> COCA ${displayEntry.frequency}</p>`;
         }
 
         if (displayEntry.lastUpdated) {
