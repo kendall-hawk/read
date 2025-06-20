@@ -1,18 +1,27 @@
-// js/navigation.js
-
 window.EnglishSite = window.EnglishSite || {};
 
 EnglishSite.Navigation = (() => {
     let _navContainer = null;
     let _contentArea = null;
     let _navData = [];
-    let _activeSeriesLink = null; // 新增：保存当前激活的系列链接
+    let _activeSeriesLink = null; // 保存当前激活的系列链接
+
+    // 新增：缓存系列和章节链接DOM元素 🚀
+    let _seriesLinksMap = new Map();
+    let _chapterLinksMap = new Map();
 
     // 初始化导航功能
     const init = (navContainer, contentArea, navData) => {
         _navContainer = navContainer;
         _contentArea = contentArea;
-        _navData = navData;
+        // 假设 navData 中的章节对象已经包含了 seriesId ✨
+        _navData = navData.map(series => ({
+            ...series,
+            chapters: series.chapters.map(chapter => ({
+                ...chapter,
+                seriesId: series.seriesId // 确保章节有 seriesId，如果数据源不提供，这里补充
+            }))
+        }));
 
         renderNavigation();
         handleInitialLoadAndPopstate();
@@ -20,6 +29,11 @@ EnglishSite.Navigation = (() => {
 
     // 渲染导航菜单 (只显示系列)
     const renderNavigation = () => {
+        // 清空旧的导航，防止重复渲染
+        _navContainer.innerHTML = '';
+        _seriesLinksMap.clear(); // 清空缓存
+        _chapterLinksMap.clear(); // 清空缓存
+
         const navList = document.createElement('ul');
         navList.classList.add('main-nav-list'); // 添加一个类名方便CSS控制
 
@@ -35,62 +49,82 @@ EnglishSite.Navigation = (() => {
 
             seriesLink.addEventListener('click', (e) => {
                 e.preventDefault();
-                setActiveSeriesLink(seriesLink); // 激活系列链接
-                // 触发一个自定义事件，通知 main.js 加载系列内容
-                document.dispatchEvent(new CustomEvent('seriesSelected', {
-                    detail: { seriesId: seriesData.seriesId, chapters: seriesData.chapters }
-                }));
+                // 设置激活的系列链接，并触发事件通知 main.js
+                setActiveSeries(seriesData.seriesId); // 统一系列激活逻辑
                 // 更新浏览器URL
                 history.pushState({ type: 'series', id: seriesData.seriesId }, '', `#series=${seriesData.seriesId}`);
             });
             seriesItem.appendChild(seriesLink);
             navList.appendChild(seriesItem);
+
+            // 缓存系列链接DOM元素 🚀
+            _seriesLinksMap.set(seriesData.seriesId, seriesLink);
+
+            // 如果章节也在这里渲染（未来扩展），可以在此缓存章节链接
+            // 例如:
+            // const chapterList = document.createElement('ul');
+            // seriesData.chapters.forEach(chapter => {
+            //     const chapterLink = document.createElement('a');
+            //     chapterLink.href = `#${chapter.id}`;
+            //     chapterLink.textContent = chapter.title;
+            //     chapterLink.dataset.chapterId = chapter.id;
+            //     chapterLink.dataset.seriesId = chapter.seriesId; // 确保有这个属性
+            //     chapterLink.classList.add('chapter-link');
+            //     _chapterLinksMap.set(chapter.id, chapterLink); // 缓存章节链接
+            //     // chapterLink.addEventListener('click', (e) => { ... });
+            //     // chapterList.appendChild(chapterLink);
+            // });
+            // seriesItem.appendChild(chapterList);
         });
         _navContainer.appendChild(navList);
     };
 
-    // 设置激活的系列链接
-    const setActiveSeriesLink = (linkElement) => {
-        if (_activeSeriesLink) {
-            _activeSeriesLink.classList.remove('active');
-        }
-        if (linkElement) {
-            linkElement.classList.add('active');
-            _activeSeriesLink = linkElement;
+    // 统一设置激活系列和触发事件的函数
+    const setActiveSeries = (seriesId) => {
+        const seriesLink = _seriesLinksMap.get(seriesId); // 从缓存获取 🚀
+        if (seriesLink) {
+            if (_activeSeriesLink) {
+                _activeSeriesLink.classList.remove('active');
+            }
+            seriesLink.classList.add('active');
+            _activeSeriesLink = seriesLink;
+
+            // 找到对应的系列数据
+            const selectedSeriesData = _navData.find(s => s.seriesId === seriesId);
+            if (selectedSeriesData) {
+                // 触发一个自定义事件，通知 main.js 加载系列内容
+                document.dispatchEvent(new CustomEvent('seriesSelected', {
+                    detail: { seriesId: selectedSeriesData.seriesId, chapters: selectedSeriesData.chapters }
+                }));
+            }
+        } else {
+            console.warn(`[Navigation] Series link with ID "${seriesId}" not found.`);
         }
     };
 
-    // 设置激活的章节链接 (保持不变，因为章节仍可能被直接加载)
-    const setActiveChapterLink = (linkElement) => {
-        // 清除所有激活状态
-        _navContainer.querySelectorAll('.series-link.active').forEach(a => a.classList.remove('active'));
-        _navContainer.querySelectorAll('.chapter-link.active').forEach(a => a.classList.remove('active'));
+    // 统一设置激活的章节链接 (同时激活所属系列) ✨
+    const setActiveChapter = (chapterId) => {
+        // 清除所有激活状态 (通过缓存的Map来移除active类) 🚀
+        _seriesLinksMap.forEach(link => link.classList.remove('active'));
+        _chapterLinksMap.forEach(link => link.classList.remove('active')); // 假设 _chapterLinksMap 已被填充
 
-        if (linkElement) {
-            linkElement.classList.add('active');
+        const chapterLink = _chapterLinksMap.get(chapterId); // 从缓存获取 🚀
+        if (chapterLink) {
+            chapterLink.classList.add('active');
 
-            // 找到所属的系列并激活它
-            const chapterId = linkElement.dataset.chapterId;
-            // 找到所属系列的ID，注意这里需要遍历 _navData 来找到章节所属的系列
-            let seriesIdForChapter = null;
-            for(const series of _navData) {
-                if (series.chapters.some(c => c.id === chapterId)) {
-                    seriesIdForChapter = series.seriesId;
-                    break;
-                }
+            // 找到所属的系列并激活它 (利用章节上的 seriesId) ✨
+            const seriesIdForChapter = chapterLink.dataset.seriesId;
+            const seriesLink = _seriesLinksMap.get(seriesIdForChapter); // 从缓存获取 🚀
+            if (seriesLink) {
+                seriesLink.classList.add('active');
+                _activeSeriesLink = seriesLink; // 更新_activeSeriesLink
             }
-
-            if (seriesIdForChapter) {
-                const seriesLink = _navContainer.querySelector(`a[data-series-id="${seriesIdForChapter}"]`);
-                if (seriesLink) {
-                    seriesLink.classList.add('active');
-                }
-            }
+        } else {
+            console.warn(`[Navigation] Chapter link with ID "${chapterId}" not found.`);
         }
     };
 
     // 加载章节内容到主显示区域 (与之前基本一致，但将不再由 series click 直接触发)
-    // 这个函数会由 main.js 在接收到 chapterLoaded 事件时调用
     const loadChapterContent = async (chapterId, hasAudio) => {
         const chapterFilePath = `chapters/${chapterId}.html`;
 
@@ -123,16 +157,15 @@ EnglishSite.Navigation = (() => {
         const allChapters = _navData.flatMap(s => s.chapters);
         const allSeries = _navData;
 
-        // 根据 URL hash 决定初始加载内容
         const currentHash = window.location.hash.substring(1); // 移除 #
 
-        let initialLoadType = 'series'; // 默认加载第一个系列
-        let initialLoadId = allSeries[0]?.seriesId; // 默认第一个系列的ID
+        let initialLoadType = 'series';
+        let initialLoadId = allSeries[0]?.seriesId;
 
         if (currentHash.startsWith('series=')) {
             initialLoadType = 'series';
             initialLoadId = currentHash.substring('series='.length);
-        } else if (currentHash) { // 假定其他非空哈希是章节ID
+        } else if (currentHash) {
             initialLoadType = 'chapter';
             initialLoadId = currentHash;
         }
@@ -140,34 +173,19 @@ EnglishSite.Navigation = (() => {
         if (initialLoadType === 'series') {
             const selectedSeries = allSeries.find(s => s.seriesId === initialLoadId) || allSeries[0];
             if (selectedSeries) {
-                const seriesLink = _navContainer.querySelector(`a[data-series-id="${selectedSeries.seriesId}"]`);
-                setActiveSeriesLink(seriesLink);
-                // 触发 seriesSelected 事件
-                document.dispatchEvent(new CustomEvent('seriesSelected', {
-                    detail: { seriesId: selectedSeries.seriesId, chapters: selectedSeries.chapters }
-                }));
-                // 更新浏览器URL状态 (以防从其他页面进来没有正确状态)
+                setActiveSeries(selectedSeries.seriesId); // 统一调用 setActiveSeries
                 history.replaceState({ type: 'series', id: selectedSeries.seriesId }, '', `#series=${selectedSeries.seriesId}`);
             }
         } else if (initialLoadType === 'chapter') {
             const selectedChapter = allChapters.find(c => c.id === initialLoadId);
             if (selectedChapter) {
-                // 加载单个章节内容
                 loadChapterContent(selectedChapter.id, selectedChapter.audio);
-                // 激活所属系列
-                const seriesLinkForChapter = _navContainer.querySelector(`a[data-series-id="${selectedChapter.seriesId}"]`);
-                setActiveSeriesLink(seriesLinkForChapter);
-                // 更新浏览器URL状态
+                // ❗ 不再在这里直接调用 setActiveSeries，让 main.js 在 chapterLoaded 后统一调用 setActiveChapter
                 history.replaceState({ type: 'chapter', id: selectedChapter.id }, '', `#${selectedChapter.id}`);
-            } else {
-                // 如果章节ID无效，回到默认系列
+            } else { // 如果章节ID无效，回到默认系列
                 const defaultSeries = allSeries[0];
                 if (defaultSeries) {
-                    const seriesLink = _navContainer.querySelector(`a[data-series-id="${defaultSeries.seriesId}"]`);
-                    setActiveSeriesLink(seriesLink);
-                    document.dispatchEvent(new CustomEvent('seriesSelected', {
-                        detail: { seriesId: defaultSeries.seriesId, chapters: defaultSeries.chapters }
-                    }));
+                    setActiveSeries(defaultSeries.seriesId); // 统一调用 setActiveSeries
                     history.replaceState({ type: 'series', id: defaultSeries.seriesId }, '', `#series=${defaultSeries.seriesId}`);
                 }
             }
@@ -180,28 +198,18 @@ EnglishSite.Navigation = (() => {
             if (state && state.type === 'series') {
                 const selectedSeries = allSeries.find(s => s.seriesId === state.id) || allSeries[0];
                 if (selectedSeries) {
-                    const seriesLink = _navContainer.querySelector(`a[data-series-id="${selectedSeries.seriesId}"]`);
-                    setActiveSeriesLink(seriesLink);
-                    document.dispatchEvent(new CustomEvent('seriesSelected', {
-                        detail: { seriesId: selectedSeries.seriesId, chapters: selectedSeries.chapters }
-                    }));
+                    setActiveSeries(selectedSeries.seriesId); // 统一调用 setActiveSeries
                 }
             } else if (state && state.type === 'chapter') {
                 const selectedChapter = allChapters.find(c => c.id === state.id);
                 if (selectedChapter) {
                     loadChapterContent(selectedChapter.id, selectedChapter.audio);
-                    // 激活所属系列
-                    const seriesLinkForChapter = _navContainer.querySelector(`a[data-series-id="${selectedChapter.seriesId}"]`);
-                    setActiveSeriesLink(seriesLinkForChapter);
+                    // ❗ 不再在这里直接调用 setActiveSeries，让 main.js 在 chapterLoaded 后统一调用 setActiveChapter
                 }
             } else { // 应对无状态或无效状态（例如首次加载）
                  const defaultSeries = allSeries[0];
                  if (defaultSeries) {
-                    const seriesLink = _navContainer.querySelector(`a[data-series-id="${defaultSeries.seriesId}"]`);
-                    setActiveSeriesLink(seriesLink);
-                    document.dispatchEvent(new CustomEvent('seriesSelected', {
-                        detail: { seriesId: defaultSeries.seriesId, chapters: defaultSeries.chapters }
-                    }));
+                    setActiveSeries(defaultSeries.seriesId); // 统一调用 setActiveSeries
                  }
             }
         });
@@ -209,7 +217,7 @@ EnglishSite.Navigation = (() => {
 
     return {
         init: init,
-        // 暴露 loadChapterContent，以便 main.js 在点击章节链接时调用
-        loadChapterContent: loadChapterContent
+        loadChapterContent: loadChapterContent,
+        setActiveChapter: setActiveChapter // 暴露新的统一激活函数 ✨
     };
 })();
