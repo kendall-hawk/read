@@ -88,7 +88,7 @@ EnglishSite.AudioSync = (() => {
             }
         }
          // 如果当前时间超出所有字幕范围，且有高亮，则移除高亮
-         if (currentTime > _srtData[_srtData.length - 1]?.endTime && _previousHighlightedElement) {
+         if (currentTime > (_srtData[_srtData.length - 1]?.endTime || 0) && _previousHighlightedElement) {
             removeHighlight(_previousHighlightedElement);
             _currentIndex = -1;
         }
