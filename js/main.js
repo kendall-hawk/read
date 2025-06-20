@@ -168,7 +168,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     });
 
     // --- 步骤 5: 监听点击页面空白处隐藏词汇弹出框 ---
-    // 这个全局监听器放在 main.js 中更合适
     document.addEventListener('click', (event) => {
         // 只有当词汇弹出框可见时才处理隐藏逻辑
         if (glossaryPopup && glossaryPopup.style.display === 'block') {
