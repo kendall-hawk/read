@@ -1,11 +1,10 @@
-// js/main.js
-
 document.addEventListener('DOMContentLoaded', async () => {
     const navContainer = document.getElementById('main-nav');
     const contentArea = document.getElementById('content');
     const glossaryPopup = document.getElementById('glossary-popup');
 
     let navData = [];
+    let audioPlayer = null; // 声明并初始化音频播放器变量，方便后续管理
 
     // --- 步骤 1: 加载导航数据 ---
     try {
@@ -63,7 +62,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 // 为每个章节生成包含缩略图、标题和音频图标的卡片链接
                 seriesContentHtml += `
                     <div class="chapter-overview-item">
-                        <a href="#${chapter.id}" class="overview-chapter-link" data-chapter-id="${chapter.id}" data-has-audio="${chapter.audio}">
+                        <a href="#${chapter.id}" class="overview-chapter-link" data-chapter-id="${chapter.id}" data-has-audio="${chapter.audio}" data-series-id="${chapter.seriesId}">
                             <img src="${chapter.thumbnail || 'images/placeholders/default_thumb.jpg'}" alt="${chapter.name}" class="chapter-thumbnail">
                             <div class="chapter-info">
                                 <h3>${chapter.name} ${chapter.audio ? '🎵' : ''}</h3>
@@ -79,21 +78,36 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         contentArea.innerHTML = seriesContentHtml; // 将生成的HTML放入内容区域
 
-        // 为新生成的章节链接添加点击事件监听器
-        contentArea.querySelectorAll('.overview-chapter-link').forEach(link => {
-            link.addEventListener('click', (e) => {
-                e.preventDefault(); // 阻止默认的链接跳转行为
-                const chapterId = link.dataset.chapterId;
-                const hasAudio = link.dataset.hasAudio === 'true'; // 数据属性值是字符串，需要转换为布尔值
-                
+        // 对新生成的章节链接使用事件委托 💡
+        // 只在 contentArea 上添加一个监听器
+        contentArea.addEventListener('click', handleOverviewChapterLinkClick);
+    });
+
+    // 新增事件委托处理器 💡
+    const handleOverviewChapterLinkClick = (event) => {
+        let target = event.target;
+        // 向上遍历DOM树，查找是否点击了 .overview-chapter-link 或其内部
+        while (target && target !== contentArea) {
+            if (target.classList.contains('overview-chapter-link')) {
+                event.preventDefault(); // 阻止默认的链接跳转行为
+
+                const chapterId = target.dataset.chapterId;
+                const hasAudio = target.dataset.hasAudio === 'true';
+                const seriesId = target.dataset.seriesId; // 获取 seriesId
+
                 // 调用 Navigation 模块暴露的方法来加载单个章节的详细内容
                 EnglishSite.Navigation.loadChapterContent(chapterId, hasAudio);
                 
                 // 更新浏览器URL，反映当前显示的是哪个章节
-                history.pushState({ type: 'chapter', id: chapterId }, '', `#${chapterId}`);
-            });
-        });
-    });
+                history.pushState({ type: 'chapter', id: chapterId, seriesId: seriesId }, '', `#${chapterId}`);
+                
+                // 移除当前的事件监听器，避免重复绑定（因为每次 seriesSelected 都会重新绑定）
+                contentArea.removeEventListener('click', handleOverviewChapterLinkClick);
+                return; // 处理完毕，退出循环
+            }
+            target = target.parentNode;
+        }
+    };
 
     // --- 步骤 4: 监听 'chapterLoaded' 自定义事件 ---
     // 当 Navigation 模块发出章节加载完成事件时，处理音频和词汇表功能
@@ -113,31 +127,34 @@ document.addEventListener('DOMContentLoaded', async () => {
         EnglishSite.AudioSync.cleanup();
 
         // 初始化词汇表功能
-        EnglishSite.Glossary.init(contentArea, glossaryPopup, chapterId);
+        // Glossary.init 只需要 contentArea 和 chapterId，glossaryPopup 已经在 Glossary 内部获取
+        EnglishSite.Glossary.init(contentArea, chapterId);
 
-        // 如果章节有音频，则加载 SRT 文件并初始化音频同步功能
+        // 获取并激活当前章节链接 (包括所属系列)
+        // 假设 chapterLoaded 事件的 detail 包含 chapterId
+        EnglishSite.Navigation.setActiveChapter(chapterId);
+
+
+        // 音频播放器管理 ♻️
+        // 始终确保有一个音频播放器元素存在，只控制其显示和 src
+        if (!audioPlayer) {
+            audioPlayer = document.createElement('audio');
+            audioPlayer.id = 'chapter-audio';
+            audioPlayer.controls = true;
+            // 将播放器插入到 contentArea 的顶部，或特定容器
+            // 如果您的HTML有固定音频控制容器，可以插入到那里
+            contentArea.insertBefore(audioPlayer, contentArea.firstChild);
+        }
+        
         if (hasAudio) {
             const srtFilePath = `srt/${chapterId}.srt`;
             const audioFilePath = `audio/${chapterId}.mp3`;
 
-            try {
-                // 检查内容区域是否已存在音频播放器，如果没有则创建
-                let audioPlayer = contentArea.querySelector('#chapter-audio');
-                if (!audioPlayer) {
-                    audioPlayer = document.createElement('audio');
-                    audioPlayer.id = 'chapter-audio';
-                    audioPlayer.controls = true;
-                    // 将播放器插入到章节内容的最前面，通常在标题之后
-                    const chapterTitle = contentArea.querySelector('.chapter-title');
-                    if (chapterTitle) {
-                        chapterTitle.insertAdjacentElement('afterend', audioPlayer);
-                    } else {
-                        contentArea.insertBefore(audioPlayer, contentArea.firstChild);
-                    }
-                }
-                audioPlayer.src = audioFilePath; // 设置音频源
-                audioPlayer.load(); // 加载音频
+            audioPlayer.style.display = 'block'; // 显示播放器
+            audioPlayer.src = audioFilePath; // 设置音频源
+            audioPlayer.load(); // 加载音频
 
+            try {
                 // 异步加载 SRT 字幕文件
                 const srtResponse = await fetch(srtFilePath);
                 if (!srtResponse.ok) throw new Error(`无法加载 SRT 文件: ${srtResponse.statusText}`);
@@ -155,28 +172,12 @@ document.addEventListener('DOMContentLoaded', async () => {
                 contentArea.prepend(errorDiv);
             }
         } else {
-            // 如果章节没有音频，确保移除任何现有的音频播放器和控制UI
-            const audioPlayer = contentArea.querySelector('#chapter-audio');
-            if (audioPlayer) {
-                audioPlayer.remove();
-            }
-            const audioControls = contentArea.querySelector('#audio-controls');
-            if (audioControls) {
-                audioControls.remove();
-            }
+            // 如果章节没有音频，隐藏播放器并清理AudioSync
+            audioPlayer.style.display = 'none';
+            EnglishSite.AudioSync.cleanup(); // 确保清理
         }
     });
 
-    // --- 步骤 5: 监听点击页面空白处隐藏词汇弹出框 ---
-    document.addEventListener('click', (event) => {
-        // 只有当词汇弹出框可见时才处理隐藏逻辑
-        if (glossaryPopup && glossaryPopup.style.display === 'block') {
-            const isClickInsidePopup = glossaryPopup.contains(event.target); // 判断点击是否在弹出框内部
-            const isClickOnTerm = event.target.classList.contains('glossary-term'); // 判断点击是否在词汇术语上
-            // 如果点击不在弹出框内，也不在任何词汇术语上，则隐藏弹出框
-            if (!isClickInsidePopup && !isClickOnTerm) {
-                glossaryPopup.style.display = 'none';
-            }
-        }
-    });
+    // --- 步骤 5: 移除：监听点击页面空白处隐藏词汇弹出框 ---
+    // 这部分逻辑已完全移交至 Glossary.js 模块内部处理 🗑️
 });
