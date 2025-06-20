@@ -6,21 +6,5 @@
             { "id": "chap1", "name": "章节 1: 问候语", "file": "chap1.html", "audio": true, "thumbnail": "https://example.com/images/chap1_thumb.jpg" },
             { "id": "chap2", "name": "章节 2: 自我介绍", "file": "chap2.html", "audio": true, "thumbnail": "https://example.com/images/chap2_thumb.jpg" }
         ]
-    },
-    {
-        "seriesId": "advanced-topics",
-        "series": "进阶话题",
-        "chapters": [
-            { "id": "chap3", "name": "章节 3: 旅行计划 (无音频)", "file": "chap3.html", "audio": false, "thumbnail": "https://example.com/images/chap3_thumb.jpg" }
-        ]
-    },
-    {
-        "seriesId": "business-english",
-        "series": "商务英语",
-        "chapters": [
-            { "id": "chap4", "name": "章节 4: 会议沟通", "file": "chap4.html", "audio": true, "thumbnail": "https://example.com/images/chap4_thumb.jpg" },
-            { "id": "chap5", "name": "章节 5: 邮件写作", "file": "chap5.html", "audio": false, "thumbnail": "https://example.com/images/chap5_thumb.jpg" },
-            { "id": "chap6", "name": "章节 6: 谈判技巧", "file": "chap6.html", "audio": true, "thumbnail": "https://example.com/images/chap6_thumb.jpg" }
-        ]
     }
 ]
