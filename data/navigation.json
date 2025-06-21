@@ -1,11 +1,11 @@
 [
   {
     "series": "BBC English",
-    "seriesId": "BBC English",
+    "seriesId": "beginner",
     "chapters": [
       {
         "id": "chap1",
-        "name": "What's your favourite kind of noodle?",
+        "title": "What's your favourite kind of noodle?",
         "audio": true,
         "thumbnail": "https://img.youtube.com/vi/aOiuSsnWEik/maxresdefault.jpg"
       }
