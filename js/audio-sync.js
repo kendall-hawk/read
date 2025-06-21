@@ -14,7 +14,6 @@ EnglishSite.AudioSync = (() => {
     let _textClickHandler = null;
     let _lastScrollTime = 0;
 
-    // SRT 解析函数
     const parseSrt = (srtText) => {
         const lines = srtText.split(/\r?\n/);
         const cues = [];
@@ -131,16 +130,19 @@ EnglishSite.AudioSync = (() => {
         }
 
         const cue = _srtData[index];
-        const el = _contentArea.querySelector(`[data-sentence-id="s${cue.id}"], [data-sentence-id="${cue.id}"]`);
+        const el =
+            _contentArea.querySelector(`[data-sentence-id="${cue.id}"]`) ||
+            _contentArea.querySelector(`[data-sentence-id="s${cue.id}"]`);
+
         if (el) {
-            el.classList.add('highlighted-current');
+            el.classList.add('highlighted');
             _previousHighlightedElement = el;
             scrollToView(el);
         }
     };
 
     const removeHighlight = (el) => {
-        el.classList.remove('highlighted-current');
+        el.classList.remove('highlighted');
     };
 
     const scrollToView = (el) => {
