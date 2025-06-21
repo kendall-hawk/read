@@ -1,40 +1,37 @@
 <!DOCTYPE html>
-<html lang="zh">
+<html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>英语学习平台</title>
+    <title>English Learning Site</title>
     <link rel="stylesheet" href="style.css">
-    <script src="js/audio-sync.js" defer></script>
-    <script src="js/glossary.js" defer></script>
-    <script src="js/navigation.js" defer></script>
-    <script src="js/main.js" defer></script>
 </head>
 <body>
+
     <header class="site-header">
-        <h1>英语学习平台</h1>
+        <h1>英语学习网站</h1>
+        <p>一个交互式学习平台</p>
     </header>
 
-    <div class="container">
-        <nav id="main-nav" class="main-nav">
-            <p>加载导航...</p>
-        </nav>
-
-        <main id="content" class="main-content">
-            <p>加载内容...</p>
-        </main>
+    <div class="site-container">
+        <nav id="main-nav" class="site-nav"></nav>
+        <main id="content" class="site-content"></main>
     </div>
 
-    <div id="glossary-popup" class="glossary-popup">
-        <div class="glossary-popup-header">
-            <span id="glossary-word"></span>
-            <button id="close-glossary-popup" class="close-btn">&times;</button>
+    <div id="glossary-popup">
+        <div class="glossary-header">
+            <h3 id="glossary-word"></h3>
+            <span class="glossary-pronunciation"></span>
+            <button class="close-button" title="关闭">&times;</button>
         </div>
-        <div id="glossary-definition" class="glossary-popup-body"></div>
+        <div id="glossary-definition" class="glossary-body">
+            </div>
     </div>
 
-    <footer class="site-footer">
-        <p>&copy; 2025 英语学习平台. All rights reserved.</p>
-    </footer>
+    <script src="js/navigation.js"></script>
+    <script src="js/glossary.js"></script>
+    <script src="js/audio-sync.js"></script>
+    <script src="js/main.js"></script>
+
 </body>
 </html>
