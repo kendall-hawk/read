@@ -1,4 +1,4 @@
-// js/main.js (调整后)
+// js/main.js (修正后的完整版本)
 
 document.addEventListener('DOMContentLoaded', async () => {
     const navContainer = document.getElementById('main-nav'); // 顶部导航容器
@@ -16,12 +16,8 @@ document.addEventListener('DOMContentLoaded', async () => {
         navData = await response.json();
         console.log('[main.js] 导航数据加载成功。', navData);
 
-        // 预处理 navData，为每个章节添加 seriesId
-        navData.forEach(series => {
-            series.chapters.forEach(chapter => {
-                chapter.seriesId = series.seriesId;
-            });
-        });
+        // 【已修正】删除了此处多余的数据处理循环。
+        // 数据处理的职责已完全交给 navigation.js 模块，保证了数据源的唯一性。
 
     } catch (error) {
         console.error('[main.js] 加载导航数据失败:', error);
@@ -176,7 +172,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     // --- 核心初始化 ---
 
     // 初始化 Navigation 模块
-    // 注意：我们将 contentArea 传递给 Navigation 模块的 navigateToChapter，而不是在 init 时存储
     EnglishSite.Navigation.init(navContainer, navData);
 
     // --- 辅助函数 ---
