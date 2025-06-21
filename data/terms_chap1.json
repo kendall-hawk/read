@@ -1,378 +1,506 @@
 {
   "invention": {
-    "title": "Invention",
-    "partOfSpeech": "noun",
-    "pronunciation": "/ɪnˈvɛnʃən/",
-    "definition": "A new product, system, or process that has been created.",
-    "contextualMeaning": {},
-    "exampleSentence": "At that time pasta companies were promoting a new **invention**, dried pasta.",
-    "synonyms": ["creation", "innovation", "discovery"],
-    "antonyms": [],
-    "etymology": "From Latin 'inventio', from 'invenire' meaning 'to find, discover'.",
-    "lastUpdated": "2025-06-21"
+    "contexts": {
+      "default": [
+        {
+          "title": "invention",
+          "partOfSpeech": "noun",
+          "frequency": 8000,
+          "definition": "The act of inventing; the contriving or creating of something new.",
+          "contextualMeaning": "Something that has been newly created or designed, like a new product or idea.",
+          "exampleSentence": "Marco Polo's journey to Italy was linked to the supposed **invention** of pasta.",
+          "synonyms": ["creation", "innovation", "discovery", "contrivance"],
+          "antonyms": ["imitation", "copy", "destruction"],
+          "etymology": "From Latin *inventio*, 'discovery, contrivance', from *invenire* 'to find, discover'.",
+          "lastUpdated": "2025-06-21"
+        }
+      ]
+    }
   },
   "unspecified": {
-    "title": "Unspecified",
-    "partOfSpeech": "adjective",
-    "pronunciation": "/ʌnˈspɛsɪfaɪd/",
-    "definition": "Not stated clearly or exactly; not known or not said.",
-    "contextualMeaning": {},
-    "exampleSentence": "Here, the phrase at one point or another means at some **unspecified** time in the past.",
-    "synonyms": ["unidentified", "undetermined", "unknown"],
-    "antonyms": ["specified", "defined", "clear"],
-    "etymology": "From 'un-' + 'specify' + '-ed'.",
-    "lastUpdated": "2025-06-21"
+    "contexts": {
+      "default": [
+        {
+          "title": "unspecified",
+          "partOfSpeech": "adjective",
+          "frequency": 3500,
+          "definition": "Not stated or made known; not determined or fixed.",
+          "contextualMeaning": "Referring to a time or detail that is not precisely identified.",
+          "exampleSentence": "The phrase 'at one point or another' means at some **unspecified** time in the past.",
+          "synonyms": ["undefined", "undetermined", "unnamed", "vague"],
+          "antonyms": ["specified", "defined", "precise", "exact"],
+          "etymology": "From 'un-' (not) + 'specify' (from Latin *specificare* 'to particularize').",
+          "lastUpdated": "2025-06-21"
+        }
+      ]
+    }
   },
   "idiom": {
-    "title": "Idiom",
-    "partOfSpeech": "noun",
-    "pronunciation": "/ˈɪdiəm/",
-    "definition": "A group of words established by usage as having a meaning not deducible from those of the individual words.",
-    "contextualMeaning": {},
-    "exampleSentence": "And finally, the **idiom** to push the boundaries means to do things which challenge normal acceptable behaviour.",
-    "synonyms": ["expression", "phrase", "saying"],
-    "antonyms": [],
-    "etymology": "From Latin 'idioma', from Greek 'idiōma' meaning 'peculiar phraseology'.",
-    "lastUpdated": "2025-06-21"
+    "contexts": {
+      "default": [
+        {
+          "title": "idiom",
+          "partOfSpeech": "noun",
+          "frequency": 2500,
+          "definition": "A group of words established by usage as having a meaning not deducible from those of the individual words.",
+          "contextualMeaning": "A fixed expression or phrase where the meaning is not literal.",
+          "exampleSentence": "To 'push the boundaries' is an **idiom** meaning to challenge normal acceptable behaviour.",
+          "synonyms": ["expression", "phrase", "figure of speech"],
+          "antonyms": [],
+          "etymology": "From Latin *idioma*, 'a peculiar phraseology', from Greek *idioma* 'peculiarity, peculiar phrase'.",
+          "lastUpdated": "2025-06-21"
+        }
+      ]
+    }
   },
   "boundaries": {
-    "title": "Boundaries",
-    "partOfSpeech": "noun (plural)",
-    "pronunciation": "/ˈbaʊndəriz/",
-    "definition": "Limits of what is considered acceptable or allowed.",
-    "contextualMeaning": {},
-    "exampleSentence": "Unlike other Japanese foods, it's OK to push the **boundaries**.",
-    "synonyms": ["limits", "borders", "confines"],
-    "antonyms": ["freedom", "unrestricted areas"],
-    "etymology": "From 'bound' (limit) + '-ary'.",
-    "lastUpdated": "2025-06-21"
+    "contexts": {
+      "default": [
+        {
+          "title": "boundaries",
+          "partOfSpeech": "noun",
+          "frequency": 4000,
+          "definition": "A line which marks the limits of an area; limits of what is considered acceptable or possible.",
+          "contextualMeaning": "The limits of acceptable behavior or action, often challenged or extended.",
+          "exampleSentence": "Modern versions of ramen **push the boundaries**, unlike other traditional food.",
+          "synonyms": ["limits", "borders", "confines", "thresholds"],
+          "antonyms": ["unlimited", "boundlessness"],
+          "etymology": "From Old French *bondre* 'limit', possibly from Latin *bodina* 'boundary mark'.",
+          "lastUpdated": "2025-06-21"
+        }
+      ]
+    }
   },
   "acceptable": {
-    "title": "Acceptable",
-    "partOfSpeech": "adjective",
-    "pronunciation": "/əkˈsɛptəbəl/",
-    "definition": "Able to be tolerated or allowed; satisfactory.",
-    "contextualMeaning": {},
-    "exampleSentence": "If you push the boundaries, you act in a way which challenges normal **acceptable** behaviour.",
-    "synonyms": ["satisfactory", "permissible", "tolerable"],
-    "antonyms": ["unacceptable", "unsatisfactory"],
-    "etymology": "From Old French 'acceptable', from Latin 'acceptabilis'.",
-    "lastUpdated": "2025-06-21"
+    "contexts": {
+      "default": [
+        {
+          "title": "acceptable",
+          "partOfSpeech": "adjective",
+          "frequency": 6500,
+          "definition": "Able to be tolerated or allowed; satisfactory or suitable.",
+          "contextualMeaning": "What is considered normal or permissible behavior or taste.",
+          "exampleSentence": "Pushing the boundaries means to do things which challenge normal **acceptable** behaviour.",
+          "synonyms": ["tolerable", "permissible", "satisfactory", "suitable"],
+          "antonyms": ["unacceptable", "intolerable", "unsuitable"],
+          "etymology": "From Old French *acceptable*, from Latin *acceptare* 'to take, receive'.",
+          "lastUpdated": "2025-06-21"
+        }
+      ]
+    }
   },
   "fresh": {
-    "title": "Fresh",
-    "partOfSpeech": "adjective",
-    "pronunciation": "/frɛʃ/",
-    "definition": "Newly made or obtained; not canned, frozen, or otherwise preserved.",
-    "contextualMeaning": {},
-    "exampleSentence": "Well, some people buy them dried in a packet, others make them **fresh** from wheat or rice.",
-    "synonyms": ["new", "recent", "pure"],
-    "antonyms": ["stale", "old", "preserved"],
-    "etymology": "From Old English 'fersc', meaning 'freshwater, pure'.",
-    "lastUpdated": "2025-06-21"
+    "contexts": {
+      "default": [
+        {
+          "title": "fresh",
+          "partOfSpeech": "adjective",
+          "frequency": 7500,
+          "definition": "Not previously known or used; newly made or obtained.",
+          "contextualMeaning": "Referring to food that is newly made or prepared, not dried or preserved.",
+          "exampleSentence": "Some people buy noodles dried in a packet, others make them **fresh** from wheat or rice.",
+          "synonyms": ["new", "recent", "crisp", "unspoiled"],
+          "antonyms": ["stale", "old", "dried", "preserved"],
+          "etymology": "From Old English *fersc* 'fresh, pure'.",
+          "lastUpdated": "2025-06-21"
+        }
+      ]
+    }
   },
   "popular": {
-    "title": "Popular",
-    "partOfSpeech": "adjective",
-    "pronunciation": "/ˈpɒpjʊlər/",
-    "definition": "Liked, enjoyed, or admired by many people.",
-    "contextualMeaning": {},
-    "exampleSentence": "there is little doubt that noodles are **popular** around the world.",
-    "synonyms": ["well-liked", "favourite", "common"],
-    "antonyms": ["unpopular", "disliked"],
-    "etymology": "From Latin 'popularis', meaning 'belonging to the people'.",
-    "lastUpdated": "2025-06-21"
+    "contexts": {
+      "default": [
+        {
+          "title": "popular",
+          "partOfSpeech": "adjective",
+          "frequency": 9000,
+          "definition": "Liked, enjoyed, or admired by many people.",
+          "contextualMeaning": "Widely liked and consumed by a large number of people.",
+          "exampleSentence": "There is little doubt that noodles are **popular** around the world.",
+          "synonyms": ["well-liked", "common", "widespread", "favored"],
+          "antonyms": ["unpopular", "disliked", "uncommon"],
+          "etymology": "From Latin *popularis* 'belonging to the people, common'.",
+          "lastUpdated": "2025-06-21"
+        }
+      ]
+    }
   },
   "origins": {
-    "title": "Origins",
-    "partOfSpeech": "noun (plural)",
-    "pronunciation": "/ˈɒrɪdʒɪnz/",
-    "definition": "The point or place where something begins, arises, or is derived.",
-    "contextualMeaning": {},
-    "exampleSentence": "From their **origins**, probably somewhere in China, noodle recipes were spread by traders on the ancient Silk Road.",
-    "synonyms": ["beginnings", "sources", "roots"],
-    "antonyms": ["ends", "destinations"],
-    "etymology": "From Latin 'originem', from 'oriri' meaning 'to rise'.",
-    "lastUpdated": "2025-06-21"
+    "contexts": {
+      "default": [
+        {
+          "title": "origins",
+          "partOfSpeech": "noun",
+          "frequency": 6000,
+          "definition": "The point or place where something begins, arises, or is derived.",
+          "contextualMeaning": "The geographical place where noodles first appeared.",
+          "exampleSentence": "From their **origins**, probably somewhere in China, noodle recipes were spread.",
+          "synonyms": ["beginnings", "source", "roots", "birthplace"],
+          "antonyms": ["end", "conclusion", "destination"],
+          "etymology": "From Latin *origio*, 'a beginning, source, birth'.",
+          "lastUpdated": "2025-06-21"
+        }
+      ]
+    }
   },
   "recipes": {
-    "title": "Recipes",
-    "partOfSpeech": "noun (plural)",
-    "pronunciation": "/ˈrɛsɪpiz/",
-    "definition": "Detailed instructions for preparing a particular dish, meal, or drink.",
-    "contextualMeaning": {},
-    "exampleSentence": "From their origins, probably somewhere in China, noodle **recipes** were spread by traders on the ancient Silk Road.",
-    "synonyms": ["formulas", "instructions", "prescriptions"],
-    "antonyms": [],
-    "etymology": "From Latin 'recipere' (to take), originally used in medical prescriptions.",
-    "lastUpdated": "2025-06-21"
+    "contexts": {
+      "default": [
+        {
+          "title": "recipes",
+          "partOfSpeech": "noun",
+          "frequency": 5500,
+          "definition": "Detailed instructions for preparing a particular dish, meal, or drink.",
+          "contextualMeaning": "Instructions for making noodle dishes.",
+          "exampleSentence": "Noodle **recipes** were spread by traders on the ancient Silk Road.",
+          "synonyms": ["formulas", "instructions", "prescriptions"],
+          "antonyms": [],
+          "etymology": "From Latin *recipere* 'to take, receive' (originally medical prescriptions).",
+          "lastUpdated": "2025-06-21"
+        }
+      ]
+    }
   },
   "spread": {
-    "title": "Spread",
-    "partOfSpeech": "verb (past tense/past participle)",
-    "pronunciation": "/sprɛd/",
-    "definition": "To extend over a large or increasing area; to disseminate.",
-    "contextualMeaning": {},
-    "exampleSentence": "From their origins, probably somewhere in China, noodle recipes were **spread** by traders on the ancient Silk Road.",
-    "synonyms": ["distributed", "dispersed", "diffused"],
-    "antonyms": ["contained", "confined"],
-    "etymology": "From Old English 'sprǣdan', meaning 'to spread, stretch out'.",
-    "lastUpdated": "2025-06-21"
+    "contexts": {
+      "default": [
+        {
+          "title": "spread",
+          "partOfSpeech": "verb",
+          "frequency": 8500,
+          "definition": "Extend over a large or increasing area.",
+          "contextualMeaning": "To be distributed or disseminated over a wide geographical area.",
+          "exampleSentence": "Noodle recipes were **spread** by traders on the ancient Silk Road.",
+          "synonyms": ["disseminate", "distribute", "propagate", "circulate"],
+          "antonyms": ["confine", "contain", "restrict"],
+          "etymology": "From Old English *sprædan* 'to spread, extend'.",
+          "lastUpdated": "2025-06-21"
+        }
+      ]
+    }
   },
   "traders": {
-    "title": "Traders",
-    "partOfSpeech": "noun (plural)",
-    "pronunciation": "/ˈtreɪdərz/",
-    "definition": "People who buy and sell goods or services.",
-    "contextualMeaning": {},
-    "exampleSentence": "noodle recipes were **spread** by **traders** on the ancient Silk Road.",
-    "synonyms": ["merchants", "dealers", "vendors"],
-    "antonyms": ["consumers"],
-    "etymology": "From 'trade' + '-er'.",
-    "lastUpdated": "2025-06-21"
+    "contexts": {
+      "default": [
+        {
+          "title": "traders",
+          "partOfSpeech": "noun",
+          "frequency": 4000,
+          "definition": "People who buy and sell goods or services.",
+          "contextualMeaning": "Individuals involved in the commercial exchange of goods, like noodles, across regions.",
+          "exampleSentence": "Noodle recipes were **spread** by **traders** on the ancient Silk Road.",
+          "synonyms": ["merchants", "dealers", "vendors", "commerce people"],
+          "antonyms": [],
+          "etymology": "From Old French *trade* 'course, track', related to 'tread'.",
+          "lastUpdated": "2025-06-21"
+        }
+      ]
+    }
   },
   "destination": {
-    "title": "Destination",
-    "partOfSpeech": "noun",
-    "pronunciation": "/ˌdɛstɪˈneɪʃən/",
-    "definition": "The place to which someone or something is going or being sent.",
-    "contextualMeaning": {},
-    "exampleSentence": "At each **destination** along the road, people gave noodles a twist, adding different flavours and ingredients to create a new dish.",
-    "synonyms": ["goal", "target", "terminus"],
-    "antonyms": ["origin", "starting point"],
-    "etymology": "From Latin 'destinatio', meaning 'a fixing, purpose'.",
-    "lastUpdated": "2025-06-21"
+    "contexts": {
+      "default": [
+        {
+          "title": "destination",
+          "partOfSpeech": "noun",
+          "frequency": 5000,
+          "definition": "The place to which someone or something is going or being sent.",
+          "contextualMeaning": "A specific location where noodles or their recipes arrived.",
+          "exampleSentence": "At each **destination** along the road, people gave noodles a twist.",
+          "synonyms": ["target", "terminus", "end point", "goal"],
+          "antonyms": ["origin", "starting point"],
+          "etymology": "From Latin *destinare* 'to determine, make firm'.",
+          "lastUpdated": "2025-06-21"
+        }
+      ]
+    }
   },
   "flavour": {
-    "title": "Flavour",
-    "partOfSpeech": "noun",
-    "pronunciation": "/ˈfleɪvər/",
-    "definition": "The distinctive taste of a food or drink or a quality that adds to the enjoyment of something.",
-    "contextualMeaning": {},
-    "exampleSentence": "adding different **flavours** and ingredients to create a new dish.",
-    "synonyms": ["taste", "savour", "aroma"],
-    "antonyms": ["blandness"],
-    "etymology": "From Old French 'flaour', meaning 'smell, odour'.",
-    "lastUpdated": "2025-06-21"
+    "contexts": {
+      "default": [
+        {
+          "title": "flavour",
+          "partOfSpeech": "noun",
+          "frequency": 7000,
+          "definition": "The distinctive taste of a food or drink; a particular quality or atmosphere.",
+          "contextualMeaning": "The specific taste profile added to noodle dishes.",
+          "exampleSentence": "At each **destination** along the road, people gave noodles a twist, adding different **flavours** and ingredients.",
+          "synonyms": ["taste", "savor", "aroma", "essence"],
+          "antonyms": ["blandness", "tastelessness"],
+          "etymology": "From Old French *flavour* 'smell, odor'.",
+          "lastUpdated": "2025-06-21"
+        }
+      ]
+    }
   },
   "ingredients": {
-    "title": "Ingredients",
-    "partOfSpeech": "noun (plural)",
-    "pronunciation": "/ɪnˈɡriːdiənts/",
-    "definition": "Any of the foods or substances that are combined to make a particular dish.",
-    "contextualMeaning": {},
-    "exampleSentence": "adding different flavours and **ingredients** to create a new dish.",
-    "synonyms": ["components", "elements", "constituents"],
-    "antonyms": [],
-    "etymology": "From Latin 'ingredientem', from 'ingredi' meaning 'to go in, enter upon'.",
-    "lastUpdated": "2025-06-21"
+    "contexts": {
+      "default": [
+        {
+          "title": "ingredients",
+          "partOfSpeech": "noun",
+          "frequency": 6500,
+          "definition": "Any of the foods or substances that are combined to make a particular dish.",
+          "contextualMeaning": "The components used to make or season noodle dishes.",
+          "exampleSentence": "At each **destination** along the road, people gave noodles a twist, adding different flavours and **ingredients**.",
+          "synonyms": ["components", "elements", "constituents"],
+          "antonyms": [],
+          "etymology": "From Latin *ingredientem*, present participle of *ingredi* 'to enter, go into'.",
+          "lastUpdated": "2025-06-21"
+        }
+      ]
+    }
   },
   "varieties": {
-    "title": "Varieties",
-    "partOfSpeech": "noun (plural)",
-    "pronunciation": "/vəˈraɪətiz/",
-    "definition": "Different types or sorts of the same thing.",
-    "contextualMeaning": {},
-    "exampleSentence": "two countries which have taken noodles and created exciting new **varieties**.",
-    "synonyms": ["types", "kinds", "sorts", "assortments"],
-    "antonyms": ["sameness", "uniformity"],
-    "etymology": "From Latin 'varietas', from 'varius' meaning 'diverse'.",
-    "lastUpdated": "2025-06-21"
+    "contexts": {
+      "default": [
+        {
+          "title": "varieties",
+          "partOfSpeech": "noun",
+          "frequency": 5000,
+          "definition": "The quality or state of being different or diverse; a number or collection of different things.",
+          "contextualMeaning": "Different kinds or types of noodles or noodle dishes.",
+          "exampleSentence": "We'll visit the United States and Japan, two countries which have taken noodles and created exciting new **varieties**.",
+          "synonyms": ["types", "kinds", "sorts", "assortments"],
+          "antonyms": ["sameness", "uniformity", "monotony"],
+          "etymology": "From Latin *varietas* 'diversity'.",
+          "lastUpdated": "2025-06-21"
+        }
+      ]
+    }
   },
   "investigated": {
-    "title": "Investigated",
-    "partOfSpeech": "verb (past tense)",
-    "pronunciation": "/ɪnˈvɛstɪɡeɪtɪd/",
-    "definition": "Carried out a systematic or formal inquiry to discover and examine the facts of (an incident, allegation, etc.) so as to establish the truth.",
-    "contextualMeaning": {},
-    "exampleSentence": "The Food Chain, **investigated** how noodles spread from Asia through Europe to America.",
-    "synonyms": ["researched", "examined", "explored"],
-    "antonyms": ["ignored", "overlooked"],
-    "etymology": "From Latin 'investigare', meaning 'to track, search into'.",
-    "lastUpdated": "2025-06-21"
+    "contexts": {
+      "default": [
+        {
+          "title": "investigated",
+          "partOfSpeech": "verb",
+          "frequency": 5500,
+          "definition": "To carry out a systematic or formal inquiry to discover and examine the facts of (an incident, allegation, etc.) so as to establish the truth.",
+          "contextualMeaning": "Researched or studied how noodles spread.",
+          "exampleSentence": "BBC World Service programme, The Food Chain, **investigated** how noodles spread from Asia through Europe to America.",
+          "synonyms": ["examined", "researched", "explored", "probed"],
+          "antonyms": ["ignored", "overlooked"],
+          "etymology": "From Latin *investigare* 'to track or trace out'.",
+          "lastUpdated": "2025-06-21"
+        }
+      ]
+    }
   },
   "uncovered": {
-    "title": "Uncovered",
-    "partOfSpeech": "verb (past tense)",
-    "pronunciation": "/ʌnˈkʌvərd/",
-    "definition": "Discovered (something previously secret or unknown).",
-    "contextualMeaning": {},
-    "exampleSentence": "They **uncovered** a surprising story: that pasta comes from noodles brought back to Italy by Marco Polo in the 13th century.",
-    "synonyms": ["revealed", "discovered", "exposed"],
-    "antonyms": ["covered", "concealed", "hid"],
-    "etymology": "From 'un-' + 'cover'.",
-    "lastUpdated": "2025-06-21"
+    "contexts": {
+      "default": [
+        {
+          "title": "uncovered",
+          "partOfSpeech": "verb",
+          "frequency": 4500,
+          "definition": "To discover (something previously hidden, lost, or unknown).",
+          "contextualMeaning": "Revealed or found out a surprising story.",
+          "exampleSentence": "They **uncovered** a surprising story: that pasta comes from noodles brought back to Italy by Marco Polo.",
+          "synonyms": ["revealed", "discovered", "disclosed", "exposed"],
+          "antonyms": ["covered", "hid", "concealed"],
+          "etymology": "From Old English *uncovert* 'uncovered, exposed'.",
+          "lastUpdated": "2025-06-21"
+        }
+      ]
+    }
   },
   "exotic": {
-    "title": "Exotic",
-    "partOfSpeech": "adjective",
-    "pronunciation": "/ɪɡˈzɒtɪk/",
-    "definition": "Unusual and exciting because of coming from faraway foreign countries.",
-    "contextualMeaning": {},
-    "exampleSentence": "So, noodles were very **exotic** in the 1920s and 30s in the United States.",
-    "synonyms": ["foreign", "unusual", "fascinating"],
-    "antonyms": ["native", "common", "familiar"],
-    "etymology": "From Greek 'exōtikos', meaning 'foreign'.",
-    "lastUpdated": "2025-06-21"
+    "contexts": {
+      "default": [
+        {
+          "title": "exotic",
+          "partOfSpeech": "adjective",
+          "frequency": 4800,
+          "definition": "Originating in or characteristic of a distant foreign country; strikingly or delightfully unusual or different.",
+          "contextualMeaning": "Unusual and exciting because of coming from far away.",
+          "exampleSentence": "Noodles were very **exotic** in the 1920s and 30s in the United States.",
+          "synonyms": ["foreign", "unusual", "unfamiliar", "exciting"],
+          "antonyms": ["common", "familiar", "native", "ordinary"],
+          "etymology": "From Greek *exotikos* 'foreign'.",
+          "lastUpdated": "2025-06-21"
+        }
+      ]
+    }
   },
   "association": {
-    "title": "Association",
-    "partOfSpeech": "noun",
-    "pronunciation": "/əˌsəʊsiˈeɪʃən/",
-    "definition": "A group of people organized for a joint purpose.",
-    "contextualMeaning": {},
-    "exampleSentence": "there was a new pasta **association** in America that wanted to promote the manufacturing of dried pasta.",
-    "synonyms": ["organization", "society", "club"],
-    "antonyms": [],
-    "etymology": "From Latin 'associatio', from 'associare' meaning 'to unite'.",
-    "lastUpdated": "2025-06-21"
+    "contexts": {
+      "default": [
+        {
+          "title": "association",
+          "partOfSpeech": "noun",
+          "frequency": 6000,
+          "definition": "A group of people organized for a joint purpose; a connection or cooperative link between people or organizations.",
+          "contextualMeaning": "An organization formed to promote pasta manufacturing.",
+          "exampleSentence": "There was a new pasta **association** in America that wanted to promote the manufacturing of dried pasta.",
+          "synonyms": ["organization", "society", "alliance", "league"],
+          "antonyms": ["disunion", "separation"],
+          "etymology": "From Latin *associatio*, from *associare* 'to unite'.",
+          "lastUpdated": "2025-06-21"
+        }
+      ]
+    }
   },
   "promote": {
-    "title": "Promote",
-    "partOfSpeech": "verb",
-    "pronunciation": "/prəˈməʊt/",
-    "definition": "To support or actively encourage (a cause, venture, etc.); further the progress of.",
-    "contextualMeaning": {},
-    "exampleSentence": "a new pasta association in America that wanted to **promote** the manufacturing of dried pasta.",
-    "synonyms": ["encourage", "endorse", "advocate"],
-    "antonyms": ["hinder", "discourage"],
-    "etymology": "From Latin 'promot-' (past participle stem of 'promovere'), meaning 'to move forward'.",
-    "lastUpdated": "2025-06-21"
+    "contexts": {
+      "default": [
+        {
+          "title": "promote",
+          "partOfSpeech": "verb",
+          "frequency": 7000,
+          "definition": "To further the progress of something; to support or actively encourage.",
+          "contextualMeaning": "To encourage the growth or sale of dried pasta.",
+          "exampleSentence": "A new pasta association in America wanted to **promote** the manufacturing of dried pasta.",
+          "synonyms": ["encourage", "endorse", "market", "advertise"],
+          "antonyms": ["hinder", "discourage", "obstruct"],
+          "etymology": "From Latin *promotere* 'to move forward'.",
+          "lastUpdated": "2025-06-21"
+        }
+      ]
+    }
   },
   "manufacturing": {
-    "title": "Manufacturing",
-    "partOfSpeech": "noun",
-    "pronunciation": "/ˌmænjʊˈfæktʃərɪŋ/",
-    "definition": "The making of articles on a large scale using machinery; industrial production.",
-    "contextualMeaning": {},
-    "exampleSentence": "that wanted to promote the **manufacturing** of dried pasta.",
-    "synonyms": ["production", "making", "fabrication"],
-    "antonyms": [],
-    "etymology": "From Latin 'manu factus' (made by hand), later referring to industrial production.",
-    "lastUpdated": "2025-06-21"
+    "contexts": {
+      "default": [
+        {
+          "title": "manufacturing",
+          "partOfSpeech": "noun",
+          "frequency": 5500,
+          "definition": "The making of articles on a large scale using machinery; the production of something.",
+          "contextualMeaning": "The industrial production of dried pasta.",
+          "exampleSentence": "A new pasta association in America wanted to promote the **manufacturing** of dried pasta.",
+          "synonyms": ["production", "making", "fabrication", "assembly"],
+          "antonyms": ["destruction", "demolition"],
+          "etymology": "From Latin *manu factum* 'made by hand'.",
+          "lastUpdated": "2025-06-21"
+        }
+      ]
+    }
   },
   "meaning": {
-    "title": "Meaning",
-    "partOfSpeech": "noun",
-    "pronunciation": "/ˈmiːnɪŋ/",
-    "definition": "What is meant by a word, text, concept, or action.",
-    "contextualMeaning": {},
-    "exampleSentence": "noodles were popular because they were exotic, **meaning** foreign, unusual and exciting.",
-    "synonyms": ["definition", "significance", "import"],
-    "antonyms": [],
-    "etymology": "From Old English 'mǣnung'.",
-    "lastUpdated": "2025-06-21"
+    "contexts": {
+      "default": [
+        {
+          "title": "meaning",
+          "partOfSpeech": "noun",
+          "frequency": 9000,
+          "definition": "What is meant by a word, text, concept, or action.",
+          "contextualMeaning": "The definition or interpretation of a word, as in 'exotic meaning foreign'.",
+          "exampleSentence": "In the 1920s, noodles were popular because they were exotic, **meaning** foreign, unusual and exciting.",
+          "synonyms": ["definition", "sense", "import", "significance"],
+          "antonyms": [],
+          "etymology": "From Old English *mænan* 'to intend, signify'.",
+          "lastUpdated": "2025-06-21"
+        }
+      ]
+    }
   },
   "foreign": {
-    "title": "Foreign",
-    "partOfSpeech": "adjective",
-    "pronunciation": "/ˈfɒrɪn/",
-    "definition": "Of, from, in, or characteristic of a country or language other than one's own.",
-    "contextualMeaning": {},
-    "exampleSentence": "noodles were popular because they were exotic, meaning **foreign**, unusual and exciting.",
-    "synonyms": ["alien", "overseas", "exotic"],
-    "antonyms": ["native", "domestic"],
-    "etymology": "From Old French 'forain', meaning 'outer, external'.",
-    "lastUpdated": "2025-06-21"
+    "contexts": {
+      "default": [
+        {
+          "title": "foreign",
+          "partOfSpeech": "adjective",
+          "frequency": 7000,
+          "definition": "Of, from, or characteristic of a country or language other than one's own.",
+          "contextualMeaning": "Originating from a country other than the United States, making it exotic.",
+          "exampleSentence": "In the 1920s, noodles were popular because they were exotic, meaning **foreign**, unusual and exciting.",
+          "synonyms": ["alien", "overseas", "international", "imported"],
+          "antonyms": ["domestic", "native", "local"],
+          "etymology": "From Old French *forain* 'outer, external'.",
+          "lastUpdated": "2025-06-21"
+        }
+      ]
+    }
   },
   "localise": {
-    "title": "Localise",
-    "partOfSpeech": "verb",
-    "pronunciation": "/ˈləʊkəlaɪz/",
-    "definition": "To adapt (a product or service) to suit a particular place or market.",
-    "contextualMeaning": {},
-    "exampleSentence": "different chefs decided to **localise** these dishes.",
-    "synonyms": ["adapt", "customize", "regionalize"],
-    "antonyms": ["globalize", "standardize"],
-    "etymology": "From 'local' + '-ize'.",
-    "lastUpdated": "2025-06-21"
+    "contexts": {
+      "default": [
+        {
+          "title": "localise",
+          "partOfSpeech": "verb",
+          "frequency": 2800,
+          "definition": "To adapt (a product or service) to suit a particular country, area, or culture.",
+          "contextualMeaning": "To adapt Chinese noodle dishes to be more suitable for Japanese taste and culture.",
+          "exampleSentence": "At one point or another, different chefs decided to **localise** these dishes.",
+          "synonyms": ["adapt", "customize", "regionalize", "domesticate"],
+          "antonyms": ["globalize", "standardize"],
+          "etymology": "From French *localiser*, from Latin *locus* 'place'.",
+          "lastUpdated": "2025-06-21"
+        }
+      ]
+    }
   },
   "slices": {
-    "title": "Slices",
-    "partOfSpeech": "noun (plural)",
-    "pronunciation": "/slaɪsɪz/",
-    "definition": "Thin, broad pieces of food cut from a larger portion.",
-    "contextualMeaning": {},
-    "exampleSentence": "adding new toppings and **slices** of beef or chicken, Japanese chefs created the noodle dish we know today as ramen.",
-    "synonyms": ["pieces", "strips", "cuts"],
-    "antonyms": ["whole"],
-    "etymology": "From Old French 'esclice', meaning 'splinter'.",
-    "lastUpdated": "2025-06-21"
+    "contexts": {
+      "default": [
+        {
+          "title": "slices",
+          "partOfSpeech": "noun",
+          "frequency": 4000,
+          "definition": "Thin, broad pieces of food or other material cut from a larger portion.",
+          "contextualMeaning": "Thin pieces of beef or chicken used as toppings for ramen.",
+          "exampleSentence": "By making these tweaks, adding new toppings and **slices** of beef or chicken, Japanese chefs created the noodle dish we know today as ramen.",
+          "synonyms": ["cuts", "pieces", "portions", "segments"],
+          "antonyms": ["whole", "chunk"],
+          "etymology": "From Old French *esclicier* 'to split'.",
+          "lastUpdated": "2025-06-21"
+        }
+      ]
+    }
   },
   "gradually": {
-    "title": "Gradually",
-    "partOfSpeech": "adverb",
-    "pronunciation": "/ˈɡrædʒuəli/",
-    "definition": "In a slow, step-by-step way; by degrees.",
-    "contextualMeaning": {},
-    "exampleSentence": "Something which evolves, develops and changes **gradually**.",
-    "synonyms": ["slowly", "progressively", "incrementally"],
-    "antonyms": ["suddenly", "abruptly"],
-    "etymology": "From 'gradual' + '-ly'.",
-    "lastUpdated": "2025-06-21"
+    "contexts": {
+      "default": [
+        {
+          "title": "gradually",
+          "partOfSpeech": "adverb",
+          "frequency": 4400,
+          "definition": "In a slow, continuous, and steady manner; by degrees.",
+          "contextualMeaning": "Developing and changing slowly over time.",
+          "exampleSentence": "Frank thinks that Japanese ramen continues to evolve – to develop and change **gradually** in response to new developments and ideas.",
+          "synonyms": ["slowly", "steadily", "progressively", "incrementally"],
+          "antonyms": ["suddenly", "abruptly", "quickly"],
+          "etymology": "From Late Latin *gradualis* (adv. *gradatim*), from Latin *gradus* 'step, pace'.",
+          "lastUpdated": "2025-06-21"
+        }
+      ]
+    }
   },
   "response": {
-    "title": "Response",
-    "partOfSpeech": "noun",
-    "pronunciation": "/rɪˈspɒns/",
-    "definition": "A verbal or written answer; a reaction to something.",
-    "contextualMeaning": {},
-    "exampleSentence": "Frank thinks that Japanese ramen continues to evolve – to develop and change gradually in **response** to new developments and ideas.",
-    "synonyms": ["answer", "reaction", "reply"],
-    "antonyms": ["question", "stimulus"],
-    "etymology": "From Latin 'responsum', from 'respondere' meaning 'to respond'.",
-    "lastUpdated": "2025-06-21"
+    "contexts": {
+      "default": [
+        {
+          "title": "response",
+          "partOfSpeech": "noun",
+          "frequency": 7500,
+          "definition": "A verbal or written answer; a reaction to something.",
+          "contextualMeaning": "A development or change occurring as a reaction to new ideas.",
+          "exampleSentence": "Frank thinks that Japanese ramen continues to evolve – to develop and change gradually in **response** to new developments and ideas.",
+          "synonyms": ["reaction", "reply", "answer", "feedback"],
+          "antonyms": ["question", "stimulus", "cause"],
+          "etymology": "From Latin *responsum* 'an answer', from *respondere* 'to answer'.",
+          "lastUpdated": "2025-06-21"
+        }
+      ]
+    }
   },
   "traditional": {
-    "title": "Traditional",
-    "partOfSpeech": "adjective",
-    "pronunciation": "/trəˈdɪʃənəl/",
-    "definition": "Existing in or as part of a tradition; long-established.",
-    "contextualMeaning": {},
-    "exampleSentence": "Unlike other **traditional** food such as sushi, modern versions of ramen push the boundaries.",
-    "synonyms": ["customary", "conventional", "classic"],
-    "antonyms": ["modern", "new", "unconventional"],
-    "etymology": "From Latin 'traditio' (delivery, surrender, tradition) + '-al'.",
-    "lastUpdated": "2025-06-21"
-  },
-  "bank": {
-    "title": "Bank",
-    "partOfSpeech": "noun",
-    "pronunciation": "/bæŋk/",
-    "definition": "A financial institution where people can save or borrow money, OR the land alongside or sloping down to a river or lake.",
-    "contextualMeaning": {
-      "river": "The land alongside or sloping down to a river or lake.",
-      "finance": "A financial organization that provides various services, for example, accepting deposits and lending money."
-    },
-    "exampleSentence": "I need to go to the **bank** to deposit some money. We had a picnic on the **bank** of the river.",
-    "synonyms": ["financial institution", "riverbank"],
-    "antonyms": [],
-    "etymology": "From Old French 'banc' (bench, money changer's table) and Old Norse 'banki' (sandbank).",
-    "lastUpdated": "2025-06-20"
-  },
-  "school": {
-    "title": "School",
-    "partOfSpeech": "noun",
-    "pronunciation": "/skuːl/",
-    "definition": "An institution for educating children or a place for learning.",
-    "contextualMeaning": {},
-    "exampleSentence": "My younger sister goes to a small **school** near our house. Welcome to our **school**!",
-    "synonyms": ["academy", "college", "educational institution"],
-    "antonyms": [],
-    "etymology": "From Greek 'skhole', meaning 'leisure' (later 'leisure for learning').",
-    "lastUpdated": "2025-06-20"
-  },
-  "unusual": {
-    "title": "Unusual",
-    "partOfSpeech": "adjective",
-    "pronunciation": "/ʌnˈjuːʒuəl/",
-    "definition": "Not habitually or commonly occurring or done; out of the ordinary.",
-    "contextualMeaning": {},
-    "exampleSentence": "Exotic means **unusual** and exciting because of coming from far away.",
-    "synonyms": ["rare", "extraordinary", "atypical"],
-    "antonyms": ["usual", "common", "ordinary"],
-    "etymology": "From 'un-' + 'usual'.",
-    "lastUpdated": "2025-06-21"
+    "contexts": {
+      "default": [
+        {
+          "title": "traditional",
+          "partOfSpeech": "adjective",
+          "frequency": 7000,
+          "definition": "Existing in or as part of a tradition; long-established.",
+          "contextualMeaning": "Referring to food or practices that have been part of a culture for a long time, often in contrast to modern innovations.",
+          "exampleSentence": "Unlike other **traditional** food such as sushi, modern versions of ramen push the boundaries.",
+          "synonyms": ["customary", "conventional", "classic", "established"],
+          "antonyms": ["modern", "new", "unconventional", "innovative"],
+          "etymology": "From Latin *traditio* 'a handing down'.",
+          "lastUpdated": "2025-06-21"
+        }
+      ]
+    }
   }
 }
-
