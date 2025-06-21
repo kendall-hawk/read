@@ -1,4 +1,4 @@
-// js/audio-sync.js
+// js/audio-sync.js (增加了点击跳转功能的完整版本)
 
 window.EnglishSite = window.EnglishSite || {};
 
@@ -6,8 +6,9 @@ EnglishSite.AudioSync = (() => {
     let _contentArea = null;
     let _audioPlayer = null;
     let _srtData = [];
-    let _currentIndex = -1; // 当前高亮的句子索引
-    let _previousHighlightedElement = null; // 上一个高亮的DOM元素
+    let _currentIndex = -1;
+    let _previousHighlightedElement = null;
+    let _textClickHandler = null;
 
     // SRT解析函数
     const parseSrt = (srtText) => {
@@ -24,12 +25,12 @@ EnglishSite.AudioSync = (() => {
                     currentCue = null;
                 }
             } else if (!isNaN(parseInt(line, 10)) && !currentCue) {
-                currentCue = { id: line }; // Assuming first line of a cue is its ID
+                currentCue = { id: line };
             } else if (line.includes('-->') && currentCue) {
                 const parts = line.split('-->');
                 currentCue.startTime = timeToSeconds(parts[0].trim());
                 currentCue.endTime = timeToSeconds(parts[1].trim());
-                currentCue.text = ''; // Initialize text
+                currentCue.text = '';
             } else if (currentCue) {
                 currentCue.text += (currentCue.text ? '\n' : '') + line;
             }
@@ -52,7 +53,7 @@ EnglishSite.AudioSync = (() => {
 
     // 初始化音频同步
     const init = (contentArea, srtText, audioPlayer) => {
-        cleanup(); // 先清理旧的状态，以防重新初始化
+        cleanup(); 
 
         _contentArea = contentArea;
         _audioPlayer = audioPlayer;
@@ -60,14 +61,36 @@ EnglishSite.AudioSync = (() => {
         _currentIndex = -1;
         _previousHighlightedElement = null;
 
-        // ✨ 使用优化后的处理器
         _audioPlayer.addEventListener('timeupdate', handleTimeUpdateOptimized);
         _audioPlayer.addEventListener('ended', handleAudioEnded);
 
-        console.log('[AudioSync] 初始化成功 (使用优化算法)。SRT数据:', _srtData);
+        _textClickHandler = (event) => handleTextClick(event);
+        _contentArea.addEventListener('click', _textClickHandler);
+
+        console.log('[AudioSync] 初始化成功，已启用点击跳转功能。SRT数据:', _srtData);
     };
 
-    // 🚀 新增：二分搜索函数，用于快速定位跳转后的字幕
+    const handleTextClick = (event) => {
+        const targetSentence = event.target.closest('[data-sentence-id]');
+        if (!targetSentence) return;
+
+        const sentenceId = targetSentence.dataset.sentenceId;
+        const cue = _srtData.find(c => c.id === sentenceId);
+
+        if (cue) {
+            console.log(`[AudioSync] 跳转到句子 ${sentenceId}，时间: ${cue.startTime}`);
+            _audioPlayer.currentTime = cue.startTime;
+            if (_audioPlayer.paused) {
+                _audioPlayer.play();
+            }
+            const cueIndex = _srtData.findIndex(c => c.id === sentenceId);
+            if (cueIndex !== -1) {
+                updateHighlight(cueIndex);
+                _currentIndex = cueIndex;
+            }
+        }
+    };
+
     const binarySearchForCue = (time) => {
         let low = 0;
         let high = _srtData.length - 1;
@@ -77,7 +100,7 @@ EnglishSite.AudioSync = (() => {
             const mid = Math.floor((low + high) / 2);
             const cue = _srtData[mid];
             if (time >= cue.startTime && time < cue.endTime) {
-                return mid; // 精确匹配
+                return mid;
             } else if (time < cue.startTime) {
                 high = mid - 1;
             } else {
@@ -92,23 +115,20 @@ EnglishSite.AudioSync = (() => {
                 return bestMatch;
             }
         }
-        return -1; // 未找到
+        return -1;
     };
 
-    // 🚀 优化后的时间更新处理器
     const handleTimeUpdateOptimized = () => {
         const currentTime = _audioPlayer.currentTime;
         let newIndex = -1;
 
-        // 1. 快速路径检查：检查当前索引是否仍然有效 (最常见情况)
         if (_currentIndex !== -1) {
             const currentCue = _srtData[_currentIndex];
             if (currentTime >= currentCue.startTime && currentTime < currentCue.endTime) {
-                return; // 还在当前句子，无需操作
+                return;
             }
         }
 
-        // 2. 检查下一个索引 (处理正常顺序播放)
         const nextIndex = _currentIndex + 1;
         if (nextIndex < _srtData.length) {
             const nextCue = _srtData[nextIndex];
@@ -117,25 +137,20 @@ EnglishSite.AudioSync = (() => {
             }
         }
         
-        // 3. 如果快速路径失败 (通常因为用户拖动进度条)，使用二分搜索
         if (newIndex === -1) {
             newIndex = binarySearchForCue(currentTime);
         }
 
-        // 4. 更新高亮
         if (newIndex !== -1 && newIndex !== _currentIndex) {
             updateHighlight(newIndex);
             _currentIndex = newIndex;
         } else if (newIndex === -1 && _previousHighlightedElement) {
-            // 如果找不到任何匹配的cue (例如在句子间隙或结尾)，则移除高亮
             removeHighlight(_previousHighlightedElement);
             _currentIndex = -1;
         }
     };
 
-    // 更新高亮
     const updateHighlight = (newIndex) => {
-        // 移除上一个高亮
         if (_previousHighlightedElement) {
             removeHighlight(_previousHighlightedElement);
         }
@@ -152,14 +167,12 @@ EnglishSite.AudioSync = (() => {
         }
     };
 
-    // 移除高亮
     const removeHighlight = (element) => {
         if (element) {
             element.classList.remove('highlighted');
         }
     };
 
-    // 滚动到视图
     const scrollToView = (element) => {
         const rect = element.getBoundingClientRect();
         const contentRect = _contentArea.getBoundingClientRect();
@@ -173,7 +186,6 @@ EnglishSite.AudioSync = (() => {
         }
     };
 
-    // 音频播放结束处理
     const handleAudioEnded = () => {
         console.log('[AudioSync] 音频播放结束。');
         if (_previousHighlightedElement) {
@@ -182,11 +194,13 @@ EnglishSite.AudioSync = (() => {
         _currentIndex = -1;
     };
 
-    // 清理函数
     const cleanup = () => {
         if (_audioPlayer) {
             _audioPlayer.removeEventListener('timeupdate', handleTimeUpdateOptimized);
             _audioPlayer.removeEventListener('ended', handleAudioEnded);
+        }
+        if (_contentArea && _textClickHandler) {
+            _contentArea.removeEventListener('click', _textClickHandler);
         }
         if (_previousHighlightedElement) {
             removeHighlight(_previousHighlightedElement);
@@ -196,6 +210,7 @@ EnglishSite.AudioSync = (() => {
         _srtData = [];
         _currentIndex = -1;
         _previousHighlightedElement = null;
+        _textClickHandler = null;
         console.log('[AudioSync] 已清理。');
     };
 
