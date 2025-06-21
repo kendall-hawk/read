@@ -1,4 +1,4 @@
-// js/main.js (最终修正、可运行的完整版本)
+// js/main.js (最终修正后的完整版本)
 
 document.addEventListener('DOMContentLoaded', async () => {
     const navContainer = document.getElementById('main-nav'); // 顶部导航容器
@@ -15,6 +15,13 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
         navData = await response.json();
         console.log('[main.js] 导航数据加载成功。', navData);
+
+        // 预处理 navData，为每个章节添加 seriesId
+        navData.forEach(series => {
+            series.chapters.forEach(chapter => {
+                chapter.seriesId = series.seriesId;
+            });
+        });
 
     } catch (error) {
         console.error('[main.js] 加载导航数据失败:', error);
@@ -35,14 +42,10 @@ document.addEventListener('DOMContentLoaded', async () => {
         const { seriesId, chapters } = event.detail;
         console.log(`[main.js] 系列 '${seriesId}' 被选中，准备显示概览。`);
 
-        // 【已修正】对模块清理进行防御性调用，这是问题的关键
-        // 只有在模块和其方法真实存在时才调用，防止因模块未加载而产生的致命错误
-        if (window.EnglishSite?.Glossary?.cleanup) {
-            EnglishSite.Glossary.cleanup();
-        }
-        if (window.EnglishSite?.AudioSync?.cleanup) {
-            EnglishSite.AudioSync.cleanup();
-        }
+        // 【已修正】暂时注释掉这两行。这是问题的根源。
+        // 因为 glossary.js 和 audio-sync.js 未完成或加载失败，直接调用会导致脚本崩溃，后续代码无法执行。
+        // EnglishSite.Glossary.cleanup();
+        // EnglishSite.AudioSync.cleanup();
         
         // 如果音频播放器存在且可见，隐藏它并停止播放
         if (audioPlayer) {
@@ -90,15 +93,15 @@ document.addEventListener('DOMContentLoaded', async () => {
         const { chapterId, hasAudio, chapterData } = event.detail;
         console.log(`[main.js] 章节详情加载完成: ${chapterId}, 是否有音频: ${hasAudio}`);
 
-        // 【已修正】同样进行防御性调用
-        if (window.EnglishSite?.Glossary?.cleanup) EnglishSite.Glossary.cleanup();
-        if (window.EnglishSite?.AudioSync?.cleanup) EnglishSite.AudioSync.cleanup();
+        // 章节加载成功，清理并初始化相关模块
+        EnglishSite.Glossary.cleanup();
+        EnglishSite.AudioSync.cleanup();
         
-        // 【已修正】防御性初始化
-        if (window.EnglishSite?.Glossary?.init) EnglishSite.Glossary.init(contentArea, chapterId);
-        
+        // 初始化词汇表功能，传递 contentArea
+        EnglishSite.Glossary.init(contentArea, chapterId);
+
         // 设置导航栏中当前章节所属系列的激活状态
-        if (window.EnglishSite?.Navigation?.setActiveChapter) EnglishSite.Navigation.setActiveChapter(chapterId);
+        EnglishSite.Navigation.setActiveChapter(chapterId);
 
         // 动态创建或获取音频播放器
         if (!audioPlayer) {
@@ -118,17 +121,22 @@ document.addEventListener('DOMContentLoaded', async () => {
 
             try {
                 const srtResponse = await fetch(srtFilePath);
-                if (!srtResponse.ok) throw new Error(`无法加载 SRT 文件: ${srtResponse.statusText}`);
+                if (!srtResponse.ok) {
+                    throw new Error(`无法加载 SRT 文件: ${srtResponse.statusText} (${srtResponse.status})`);
+                }
                 const srtText = await srtResponse.text();
-                // 【已修正】防御性初始化
-                if (window.EnglishSite?.AudioSync?.init) EnglishSite.AudioSync.init(contentArea, srtText, audioPlayer);
+                EnglishSite.AudioSync.init(contentArea, srtText, audioPlayer);
             } catch (e) {
                 console.error('[main.js] 加载或解析 SRT/音频失败:', e);
                 const errorDiv = document.createElement('div');
                 errorDiv.style.color = 'red';
                 errorDiv.textContent = '抱歉，音频或字幕加载失败。';
-                contentArea.insertBefore(errorDiv, contentArea.firstChild || null);
-                if (window.EnglishSite?.AudioSync?.cleanup) EnglishSite.AudioSync.cleanup();
+                if(contentArea.firstChild) {
+                    contentArea.insertBefore(errorDiv, contentArea.firstChild);
+                } else {
+                    contentArea.appendChild(errorDiv);
+                }
+                EnglishSite.AudioSync.cleanup();
             }
         } else {
             if (audioPlayer) {
@@ -136,7 +144,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 audioPlayer.pause();
                 audioPlayer.removeAttribute('src');
             }
-            if (window.EnglishSite?.AudioSync?.cleanup) EnglishSite.AudioSync.cleanup();
+            EnglishSite.AudioSync.cleanup();
         }
     });
 
@@ -144,49 +152,52 @@ document.addEventListener('DOMContentLoaded', async () => {
     document.addEventListener('chapterLoadError', (event) => {
         const { chapterId, message, originalError } = event.detail;
         console.error(`[main.js] 章节 ${chapterId} 加载遇到错误: ${message}`, originalError);
-        // 【已修正】防御性调用
-        if (window.EnglishSite?.Glossary?.cleanup) EnglishSite.Glossary.cleanup();
-        if (window.EnglishSite?.AudioSync?.cleanup) EnglishSite.AudioSync.cleanup();
+        // 清理所有相关模块的状态
+        EnglishSite.Glossary.cleanup();
+        EnglishSite.AudioSync.cleanup();
         if (audioPlayer) {
             audioPlayer.style.display = 'none';
             audioPlayer.pause();
             audioPlayer.removeAttribute('src');
         }
+        // contentArea 已经由 navigation.js 填充了错误信息，这里无需重复操作
     });
 
     // 监听 initialChapterLoad 事件，在页面初次加载时处理特定章节的加载
     document.addEventListener('initialChapterLoad', (event) => {
         const { chapterId } = event.detail;
-        if (window.EnglishSite?.Navigation?.navigateToChapter) EnglishSite.Navigation.navigateToChapter(chapterId);
+        EnglishSite.Navigation.navigateToChapter(chapterId); // 调用导航模块进行章节跳转
     });
 
     // 监听 popstateChapterLoad 事件，在浏览器前进/后退时处理特定章节的加载
     document.addEventListener('popstateChapterLoad', (event) => {
         const { chapterId } = event.detail;
-        if (window.EnglishSite?.Navigation?.navigateToChapter) EnglishSite.Navigation.navigateToChapter(chapterId);
+        EnglishSite.Navigation.navigateToChapter(chapterId);
     });
 
     // --- 核心初始化 ---
-    if (window.EnglishSite?.Navigation?.init) {
-        EnglishSite.Navigation.init(navContainer, navData);
-    } else {
-        console.error("致命错误: Navigation 模块未能加载！");
-    }
+
+    // 初始化 Navigation 模块
+    // 注意：我们将 contentArea 传递给 Navigation 模块的 navigateToChapter，而不是在 init 时存储
+    EnglishSite.Navigation.init(navContainer, navData);
 
     // --- 辅助函数 ---
+
+    // 处理系列概览中章节链接的点击（事件委托）
     const handleOverviewChapterLinkClick = (event) => {
         let target = event.target;
         while (target && target !== contentArea) {
             if (target.classList.contains('overview-chapter-link')) {
                 event.preventDefault();
                 const chapterId = target.dataset.chapterId;
-                if (window.EnglishSite?.Navigation?.navigateToChapter) EnglishSite.Navigation.navigateToChapter(chapterId);
+                EnglishSite.Navigation.navigateToChapter(chapterId); // 调用导航模块进行章节跳转
                 return;
             }
             target = target.parentNode;
         }
     };
     
+    // 图片懒加载函数
     const setupLazyLoading = () => {
         const lazyImages = contentArea.querySelectorAll('img.lazy-load');
         if ('IntersectionObserver' in window) {
@@ -194,6 +205,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 entries.forEach(entry => {
                     if (entry.isIntersecting) {
                         const img = entry.target;
+                        // 使用 dataset.src 作为真实图片源
                         img.src = img.dataset.src || img.src;
                         img.classList.remove('lazy-load');
                         observer.unobserve(img);
@@ -202,6 +214,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             }, { rootMargin: '0px 0px 50px 0px' });
             lazyImages.forEach(img => observer.observe(img));
         } else {
+            // 不支持 IntersectionObserver 的情况，直接加载所有图片
             lazyImages.forEach(img => {
                 img.src = img.dataset.src || img.src;
                 img.classList.remove('lazy-load');
