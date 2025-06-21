@@ -6,8 +6,8 @@ EnglishSite.AudioSync = (() => {
     let _contentArea = null;
     let _audioPlayer = null;
     let _srtData = [];
-    let _currentIndex = -1;
-    let _previousHighlightedElement = null;
+    let _currentIndex = -1; // 当前高亮的句子索引
+    let _previousHighlightedElement = null; // 上一个高亮的DOM元素
 
     // SRT解析函数
     const parseSrt = (srtText) => {
@@ -50,15 +50,20 @@ EnglishSite.AudioSync = (() => {
         return (hours * 3600) + (minutes * 60) + seconds + (milliseconds / 1000);
     };
 
+    // 初始化音频同步
     const init = (contentArea, srtText, audioPlayer) => {
-        cleanup();
+        cleanup(); // 先清理旧的状态，以防重新初始化
+
         _contentArea = contentArea;
         _audioPlayer = audioPlayer;
         _srtData = parseSrt(srtText);
         _currentIndex = -1;
         _previousHighlightedElement = null;
-        _audioPlayer.addEventListener('timeupdate', handleTimeUpdateOptimized); // ✨ 使用优化后的处理器
+
+        // ✨ 使用优化后的处理器
+        _audioPlayer.addEventListener('timeupdate', handleTimeUpdateOptimized);
         _audioPlayer.addEventListener('ended', handleAudioEnded);
+
         console.log('[AudioSync] 初始化成功 (使用优化算法)。SRT数据:', _srtData);
     };
 
@@ -80,6 +85,7 @@ EnglishSite.AudioSync = (() => {
                 low = mid + 1;
             }
         }
+        
         if (bestMatch !== -1) {
             const cue = _srtData[bestMatch];
             if (time >= cue.startTime && time < cue.endTime) {
@@ -121,17 +127,22 @@ EnglishSite.AudioSync = (() => {
             updateHighlight(newIndex);
             _currentIndex = newIndex;
         } else if (newIndex === -1 && _previousHighlightedElement) {
+            // 如果找不到任何匹配的cue (例如在句子间隙或结尾)，则移除高亮
             removeHighlight(_previousHighlightedElement);
             _currentIndex = -1;
         }
     };
 
+    // 更新高亮
     const updateHighlight = (newIndex) => {
+        // 移除上一个高亮
         if (_previousHighlightedElement) {
             removeHighlight(_previousHighlightedElement);
         }
+
         const currentCue = _srtData[newIndex];
         const targetElement = _contentArea.querySelector(`[data-sentence-id="${currentCue.id}"]`);
+
         if (targetElement) {
             targetElement.classList.add('highlighted');
             _previousHighlightedElement = targetElement;
@@ -141,15 +152,18 @@ EnglishSite.AudioSync = (() => {
         }
     };
 
+    // 移除高亮
     const removeHighlight = (element) => {
         if (element) {
             element.classList.remove('highlighted');
         }
     };
 
+    // 滚动到视图
     const scrollToView = (element) => {
         const rect = element.getBoundingClientRect();
         const contentRect = _contentArea.getBoundingClientRect();
+
         if (rect.top < contentRect.top || rect.bottom > contentRect.bottom) {
             const scrollPosition = element.offsetTop - _contentArea.offsetTop - (_contentArea.clientHeight / 2) + (rect.height / 2);
             _contentArea.scrollTo({
@@ -159,6 +173,7 @@ EnglishSite.AudioSync = (() => {
         }
     };
 
+    // 音频播放结束处理
     const handleAudioEnded = () => {
         console.log('[AudioSync] 音频播放结束。');
         if (_previousHighlightedElement) {
@@ -167,6 +182,7 @@ EnglishSite.AudioSync = (() => {
         _currentIndex = -1;
     };
 
+    // 清理函数
     const cleanup = () => {
         if (_audioPlayer) {
             _audioPlayer.removeEventListener('timeupdate', handleTimeUpdateOptimized);
