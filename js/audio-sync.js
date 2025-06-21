@@ -3,13 +3,18 @@
 window.EnglishSite = window.EnglishSite || {};
 
 EnglishSite.AudioSync = (() => {
+    const DEBUG = false;
+
     let _contentArea = null;
     let _audioPlayer = null;
     let _srtData = [];
+    let _timeIndex = [];
     let _currentIndex = -1;
     let _previousHighlightedElement = null;
     let _textClickHandler = null;
+    let _lastScrollTime = 0;
 
+    // SRT 解析函数
     const parseSrt = (srtText) => {
         const lines = srtText.split(/\r?\n/);
         const cues = [];
@@ -56,6 +61,11 @@ EnglishSite.AudioSync = (() => {
         _srtData = parseSrt(srtText);
         _currentIndex = -1;
         _previousHighlightedElement = null;
+        _timeIndex = _srtData.map((cue, i) => ({
+            start: cue.startTime,
+            end: cue.endTime,
+            index: i
+        }));
 
         _audioPlayer.addEventListener('timeupdate', handleTimeUpdate);
         _audioPlayer.addEventListener('ended', handleAudioEnded);
@@ -63,25 +73,26 @@ EnglishSite.AudioSync = (() => {
         _textClickHandler = handleTextClick;
         _contentArea.addEventListener('click', _textClickHandler);
 
-        console.log('[AudioSync] 初始化成功，加载', _srtData.length, '条字幕');
+        if (DEBUG) console.log('[AudioSync] 初始化成功，加载', _srtData.length, '条字幕');
     };
 
     const handleTextClick = (event) => {
         const target = event.target.closest('[data-sentence-id]');
         if (!target) return;
 
-        const id = target.dataset.sentenceId;
-        const cue = _srtData.find(c => c.id === id);
-        if (!cue) return;
-
-        _audioPlayer.currentTime = cue.startTime;
-        _audioPlayer.play();
+        let id = target.dataset.sentenceId;
+        if (id.startsWith('s')) id = id.slice(1);
 
         const index = _srtData.findIndex(c => c.id === id);
-        if (index !== -1) {
-            updateHighlight(index);
-            _currentIndex = index;
-        }
+        if (index === -1) return;
+
+        if (_currentIndex === index && !_audioPlayer.paused) return;
+
+        const cue = _srtData[index];
+        _audioPlayer.currentTime = cue.startTime;
+        _audioPlayer.play();
+        updateHighlight(index);
+        _currentIndex = index;
     };
 
     const handleTimeUpdate = () => {
@@ -92,10 +103,7 @@ EnglishSite.AudioSync = (() => {
             if (currentTime >= cue.startTime && currentTime < cue.endTime) return;
         }
 
-        const index = _srtData.findIndex(
-            cue => currentTime >= cue.startTime && currentTime < cue.endTime
-        );
-
+        const index = findCueIndex(currentTime);
         if (index !== -1 && index !== _currentIndex) {
             updateHighlight(index);
             _currentIndex = index;
@@ -105,25 +113,41 @@ EnglishSite.AudioSync = (() => {
         }
     };
 
+    const findCueIndex = (time) => {
+        let left = 0, right = _timeIndex.length - 1;
+        while (left <= right) {
+            const mid = Math.floor((left + right) / 2);
+            const { start, end, index } = _timeIndex[mid];
+            if (time >= start && time < end) return index;
+            if (time < start) right = mid - 1;
+            else left = mid + 1;
+        }
+        return -1;
+    };
+
     const updateHighlight = (index) => {
         if (_previousHighlightedElement) {
             removeHighlight(_previousHighlightedElement);
         }
 
         const cue = _srtData[index];
-        const el = _contentArea.querySelector(`[data-sentence-id="${cue.id}"]`);
+        const el = _contentArea.querySelector(`[data-sentence-id="s${cue.id}"], [data-sentence-id="${cue.id}"]`);
         if (el) {
-            el.classList.add('highlighted');
+            el.classList.add('highlighted-current');
             _previousHighlightedElement = el;
             scrollToView(el);
         }
     };
 
     const removeHighlight = (el) => {
-        el.classList.remove('highlighted');
+        el.classList.remove('highlighted-current');
     };
 
     const scrollToView = (el) => {
+        const now = Date.now();
+        if (now - _lastScrollTime < 300) return;
+        _lastScrollTime = now;
+
         el.scrollIntoView({
             behavior: 'smooth',
             block: 'center',
@@ -153,9 +177,11 @@ EnglishSite.AudioSync = (() => {
         _contentArea = null;
         _audioPlayer = null;
         _srtData = [];
+        _timeIndex = [];
         _currentIndex = -1;
         _previousHighlightedElement = null;
         _textClickHandler = null;
+        _lastScrollTime = 0;
     };
 
     return {
