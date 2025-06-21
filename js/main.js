@@ -12,12 +12,16 @@ document.addEventListener('DOMContentLoaded', async () => {
         navData = await response.json();
     } catch (error) {
         console.error('[main.js] 加载导航数据失败:', error);
-        contentArea.innerHTML = `<div style="color: red; padding: 20px;">抱歉，导航菜单加载失败。</div>`;
+        contentArea.innerHTML = `<div style="color: red; padding: 20px;">抱歉，导航菜单加载失败。请检查文件或网络连接。</div>`;
         return;
     }
 
+    // --- 事件监听器 ---
+
     document.addEventListener('seriesSelected', (event) => {
         const { seriesId, chapters } = event.detail;
+        
+        // 所有模块均已就位，直接调用 cleanup
         EnglishSite.Glossary.cleanup();
         EnglishSite.AudioSync.cleanup();
 
@@ -33,8 +37,10 @@ document.addEventListener('DOMContentLoaded', async () => {
                 seriesContentHtml += `
                     <div class="chapter-overview-item">
                         <a href="#${chapter.id}" class="overview-chapter-link" data-chapter-id="${chapter.id}">
-                            <img src="${thumbnailUrl}" loading="lazy" alt="${chapter.title}" class="chapter-thumbnail" onerror="this.onerror=null;this.src='images/placeholders/default_thumb.jpg';">
-                            <div class="chapter-info"><h3>${chapter.title} ${chapter.audio ? '🎵' : ''}</h3></div>
+                            <img src="${thumbnailUrl}" loading="lazy" alt="${chapter.title}" class="chapter-thumbnail lazy-load" onerror="this.onerror=null;this.src='images/placeholders/default_thumb.jpg';">
+                            <div class="chapter-info">
+                                <h3>${chapter.title} ${chapter.audio ? '🎵' : ''}</h3>
+                            </div>
                         </a>
                     </div>`;
             });
@@ -46,6 +52,8 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     document.addEventListener('chapterLoaded', async (event) => {
         const { chapterId, hasAudio } = event.detail;
+
+        // 所有模块均已就位，直接调用 cleanup 和 init
         EnglishSite.Glossary.cleanup();
         EnglishSite.AudioSync.cleanup();
         
@@ -62,31 +70,38 @@ document.addEventListener('DOMContentLoaded', async () => {
         if (hasAudio) {
             audioPlayer.style.display = 'block';
             audioPlayer.src = `audio/${chapterId}.mp3`;
+            audioPlayer.load();
+
             try {
                 const srtResponse = await fetch(`srt/${chapterId}.srt`);
                 if (!srtResponse.ok) throw new Error('SRT file not found');
                 const srtText = await srtResponse.text();
                 EnglishSite.AudioSync.init(contentArea, srtText, audioPlayer);
             } catch (e) {
-                console.error('[main.js] SRT加载失败:', e);
+                console.error('[main.js] 加载或解析 SRT 文件失败，音频同步功能将不可用:', e);
             }
         } else {
             audioPlayer.style.display = 'none';
         }
     });
 
-    document.addEventListener('chapterLoadError', (e) => {
-        console.error(`[main.js] 章节加载错误`, e.detail);
+    document.addEventListener('chapterLoadError', (event) => {
+        console.error(`[main.js] 章节加载遇到错误`, event.detail);
         EnglishSite.Glossary.cleanup();
         EnglishSite.AudioSync.cleanup();
     });
 
-    const handleChapterNavigation = (chapterId) => EnglishSite.Navigation.navigateToChapter(chapterId);
+    const handleChapterNavigation = (chapterId) => {
+        EnglishSite.Navigation.navigateToChapter(chapterId);
+    };
+
     document.addEventListener('initialChapterLoad', (e) => handleChapterNavigation(e.detail.chapterId));
     document.addEventListener('popstateChapterLoad', (e) => handleChapterNavigation(e.detail.chapterId));
 
+    // --- 核心初始化 ---
     EnglishSite.Navigation.init(navContainer, navData);
 
+    // --- 辅助函数 ---
     const handleOverviewChapterLinkClick = (event) => {
         const link = event.target.closest('.overview-chapter-link');
         if (link) {
