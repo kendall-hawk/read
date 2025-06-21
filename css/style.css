@@ -200,4 +200,26 @@ body {
 }
 .glossary-body strong {
     color: #555;
+/* 请将此代码添加到您的 css/style.css 文件中 */
+
+.site-content {
+    /* * 关键属性1: height 或 max-height
+     * 让容器有一个限定的高度。这里我们用 vh (视口高度) 单位来计算，
+     * 假设您的 header 高度大约是 120px，您可以根据实际情况调整这个值。
+     */
+    height: calc(100vh - 120px); 
+
+    /* * 关键属性2: overflow-y
+     * 当内容超出设定的高度时，显示垂直滚动条。
+     * 'auto' 表示仅在需要时显示。
+     */
+    overflow-y: auto;
+    
+    /* 建议添加，以获得更平滑的滚动体验和更好的布局基准 */
+    scroll-behavior: smooth;
+    position: relative; 
+    padding: 20px; /* 增加一些内边距，让内容不贴边 */
+    box-sizing: border-box;
+}
+
 }
