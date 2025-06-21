@@ -221,5 +221,32 @@ body {
     padding: 20px; /* 增加一些内边距，让内容不贴边 */
     box-sizing: border-box;
 }
+/* 请将此代码添加到 css/style.css 文件中 */
+
+#player-section {
+    /* 关键属性：将定位方式设置为“固定定位” */
+    position: fixed;
+    
+    /* 将其固定在屏幕底部 */
+    bottom: 0;
+    left: 0;
+    right: 0; /* 或者 width: 100%; */
+
+    /* 确保它在所有内容的上层，不会被遮挡 */
+    z-index: 1000;
+
+    /* 优化外观：添加背景色、阴影和内边距，使其看起来像一个工具栏 */
+    background-color: #ffffff;
+    padding: 15px 20px;
+    box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+    border-top: 1px solid #e0e0e0;
+
+    /* 使用 Flexbox 优化内部元素的对齐 */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 20px; /* 在播放器和速度控件之间增加一些间距 */
+    flex-wrap: wrap; /* 在小屏幕上允许换行 */
+}
 
 }
