@@ -55,9 +55,9 @@ document.addEventListener('DOMContentLoaded', async () => {
                             <img src="images/placeholders/default_thumb.jpg" 
                                  loading="lazy" 
                                  data-src="${chapter.thumbnail || 'images/placeholders/default_thumb.jpg'}" 
-                                 alt="${chapter.name}" class="chapter-thumbnail lazy-load">
+                                 alt="${chapter.title}" class="chapter-thumbnail lazy-load">
                             <div class="chapter-info">
-                                <h3>${chapter.name} ${chapter.audio ? '🎵' : ''}</h3>
+                                <h3>${chapter.title} ${chapter.audio ? '🎵' : ''}</h3>
                             </div>
                         </a>
                     </div>`;
@@ -68,7 +68,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         seriesContentHtml += '</div>';
         contentArea.innerHTML = seriesContentHtml;
 
-        // 🚀 启动图片懒加载的 Intersection Observer
         setupLazyLoading();
 
         contentArea.addEventListener('click', handleOverviewChapterLinkClick);
@@ -81,7 +80,6 @@ document.addEventListener('DOMContentLoaded', async () => {
                 event.preventDefault();
                 const chapterId = target.dataset.chapterId;
                 
-                // ✨ 统一调用 Navigation 模块的方法，不再直接操作 history
                 EnglishSite.Navigation.navigateToChapter(chapterId);
                 
                 contentArea.removeEventListener('click', handleOverviewChapterLinkClick);
@@ -91,7 +89,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     };
     
-    // 🚀 新增：图片懒加载的设置函数
     const setupLazyLoading = () => {
         const lazyImages = contentArea.querySelectorAll('img.lazy-load');
         if ('IntersectionObserver' in window) {
@@ -104,10 +101,9 @@ document.addEventListener('DOMContentLoaded', async () => {
                         observer.unobserve(img);
                     }
                 });
-            }, { rootMargin: '0px 0px 50px 0px' }); // 可以预加载视口下方50px的图片
+            }, { rootMargin: '0px 0px 50px 0px' });
             lazyImages.forEach(img => observer.observe(img));
         } else {
-            // 为不支持 IntersectionObserver 的旧浏览器提供回退
             lazyImages.forEach(img => {
                 img.src = img.dataset.src;
                 img.classList.remove('lazy-load');
