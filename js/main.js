@@ -1,9 +1,8 @@
-// main.js
+// js/main.js
 
 document.addEventListener('DOMContentLoaded', async () => {
     const navContainer = document.getElementById('main-nav');
     const contentArea = document.getElementById('content');
-    const glossaryPopup = document.getElementById('glossary-popup');
 
     let navData = [];
     let audioPlayer = null;
@@ -34,8 +33,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         return;
     }
 
-    EnglishSite.Navigation.init(navContainer, contentArea, navData);
-
+    // 注册 seriesSelected 事件监听器
     document.addEventListener('seriesSelected', (event) => {
         const { seriesId, chapters } = event.detail;
         console.log(`[main.js] 系列 '${seriesId}' 被选中，准备显示概览。`);
@@ -70,47 +68,11 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         setupLazyLoading();
 
+        contentArea.removeEventListener('click', handleOverviewChapterLinkClick);
         contentArea.addEventListener('click', handleOverviewChapterLinkClick);
     });
 
-    const handleOverviewChapterLinkClick = (event) => {
-        let target = event.target;
-        while (target && target !== contentArea) {
-            if (target.classList.contains('overview-chapter-link')) {
-                event.preventDefault();
-                const chapterId = target.dataset.chapterId;
-                
-                EnglishSite.Navigation.navigateToChapter(chapterId);
-                
-                contentArea.removeEventListener('click', handleOverviewChapterLinkClick);
-                return;
-            }
-            target = target.parentNode;
-        }
-    };
-    
-    const setupLazyLoading = () => {
-        const lazyImages = contentArea.querySelectorAll('img.lazy-load');
-        if ('IntersectionObserver' in window) {
-            const observer = new IntersectionObserver((entries, observer) => {
-                entries.forEach(entry => {
-                    if (entry.isIntersecting) {
-                        const img = entry.target;
-                        img.src = img.dataset.src;
-                        img.classList.remove('lazy-load');
-                        observer.unobserve(img);
-                    }
-                });
-            }, { rootMargin: '0px 0px 50px 0px' });
-            lazyImages.forEach(img => observer.observe(img));
-        } else {
-            lazyImages.forEach(img => {
-                img.src = img.dataset.src;
-                img.classList.remove('lazy-load');
-            });
-        }
-    };
-
+    // 注册 chapterLoaded 事件监听器
     document.addEventListener('chapterLoaded', async (event) => {
         const { chapterId, hasAudio, error } = event.detail;
         console.log(`[main.js] 章节详情加载完成: ${chapterId}, 是否有音频: ${hasAudio}`);
@@ -151,11 +113,55 @@ document.addEventListener('DOMContentLoaded', async () => {
                 const errorDiv = document.createElement('div');
                 errorDiv.style.color = 'red';
                 errorDiv.textContent = '抱歉，音频或字幕加载失败。';
-                contentArea.prepend(errorDiv);
+                if(contentArea.firstChild) {
+                    contentArea.insertBefore(errorDiv, contentArea.firstChild);
+                } else {
+                    contentArea.appendChild(errorDiv);
+                }
             }
         } else {
-            audioPlayer.style.display = 'none';
+            if (audioPlayer) {
+                audioPlayer.style.display = 'none';
+            }
             EnglishSite.AudioSync.cleanup();
         }
     });
+
+    // 在所有监听器都准备好之后，再进行初始化
+    EnglishSite.Navigation.init(navContainer, contentArea, navData);
+
+    const handleOverviewChapterLinkClick = (event) => {
+        let target = event.target;
+        while (target && target !== contentArea) {
+            if (target.classList.contains('overview-chapter-link')) {
+                event.preventDefault();
+                const chapterId = target.dataset.chapterId;
+                EnglishSite.Navigation.navigateToChapter(chapterId);
+                return;
+            }
+            target = target.parentNode;
+        }
+    };
+    
+    const setupLazyLoading = () => {
+        const lazyImages = contentArea.querySelectorAll('img.lazy-load');
+        if ('IntersectionObserver' in window) {
+            const observer = new IntersectionObserver((entries, observer) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        const img = entry.target;
+                        img.src = img.dataset.src;
+                        img.classList.remove('lazy-load');
+                        observer.unobserve(img);
+                    }
+                });
+            }, { rootMargin: '0px 0px 50px 0px' });
+            lazyImages.forEach(img => observer.observe(img));
+        } else {
+            lazyImages.forEach(img => {
+                img.src = img.dataset.src;
+                img.classList.remove('lazy-load');
+            });
+        }
+    };
 });
