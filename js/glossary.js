@@ -50,7 +50,7 @@ EnglishSite.Glossary = (() => {
                     _cachedGlossaryData.set(chapterId, _currentGlossaryData);
                     console.log(`[Glossary] Loaded ${Object.keys(_currentGlossaryData).length} terms for chapter ${chapterId} from network.`);
                 } else {
-                    console.warn(`[Glossary] No glossary data found for chapter "${chapterId}".`);
+                    console.warn(`[Glossary] No glossary data found for chapter "${chapterId}". Path: data/terms_${chapterId}.json`);
                     _currentGlossaryData = {}; 
                     _cachedGlossaryData.set(chapterId, {});
                 }
@@ -161,40 +161,83 @@ EnglishSite.Glossary = (() => {
         }
 
         if (!displayEntry) {
-            console.warn(`[Glossary] No suitable definition found for "${word}".`);
+            console.warn(`[Glossary] No suitable definition found for "${word}" in context "${context}" or default.`);
             hidePopup();
             return;
         }
-
+        
         _glossaryPopup.querySelector('#glossary-word').textContent = displayEntry.title || word;
         _glossaryPopup.querySelector('.glossary-pronunciation').textContent = displayEntry.pronunciation || '';
 
         let html = '';
         html += `<div class="glossary-definition-block">`;
 
-        if (displayEntry.partOfSpeech) { html += `<p class="glossary-part-of-speech">(${displayEntry.partOfSpeech})</p>`; }
+        if (displayEntry.partOfSpeech) {
+            html += `<p class="glossary-part-of-speech">(${displayEntry.partOfSpeech})</p>`;
+        }
+
         html += `<p class="glossary-main-definition">${displayEntry.definition || 'Definition not available.'}</p>`;
+
         if (displayEntry.exampleSentence) {
-            const highlighted = displayEntry.exampleSentence.replace(new RegExp(`\\b${word}\\b`, 'gi'), `<strong>$&</strong>`);
+            const highlighted = displayEntry.exampleSentence.replace(
+                new RegExp(`\\b${word}\\b`, 'gi'),
+                `<strong>$&</strong>`
+            );
             html += `<p class="glossary-example"><strong>Example:</strong> ${highlighted}</p>`;
         }
+
         if (displayEntry.image) {
             html += `<img src="${displayEntry.image}" alt="${displayEntry.imageDescription || word}" class="glossary-image">`;
-            if (displayEntry.imageDescription) { html += `<p class="glossary-image-description">${displayEntry.imageDescription}</p>`; }
+            if (displayEntry.imageDescription) {
+                html += `<p class="glossary-image-description">${displayEntry.imageDescription}</p>`;
+            }
         }
-        if (displayEntry.videoLink) { html += `<p class="glossary-video-link"><a href="${displayEntry.videoLink}" target="_blank">Watch Video 🎬</a></p>`; }
-        if (displayEntry.synonyms?.length) { html += `<p class="glossary-synonyms"><strong>Synonyms:</strong> ${displayEntry.synonyms.join(', ')}</p>`; }
-        if (displayEntry.antonyms?.length) { html += `<p class="glossary-antonyms"><strong>Antonyms:</strong> ${displayEntry.antonyms.join(', ')}</p>`; }
-        if (displayEntry.etymology) { html += `<p class="glossary-etymology"><strong>Etymology:</strong> ${displayEntry.etymology}</p>`; }
-        if (displayEntry.category) { html += `<p class="glossary-category"><strong>Category:</strong> ${displayEntry.category}</p>`; }
-        if (displayEntry.source) { html += `<p class="glossary-source"><strong>Source:</strong> ${displayEntry.source}</p>`; }
-        if (displayEntry.notes) { html += `<p class="glossary-notes"><strong>Note:</strong> ${displayEntry.notes}</p>`; }
-        if (displayEntry.level) { html += `<p class="glossary-level"><strong>Level:</strong> ${displayEntry.level}</p>`; }
-        if (displayEntry.frequency !== undefined) { html += `<p class="glossary-frequency"><strong>Frequency:</strong> COCA ${displayEntry.frequency}</p>`; }
-        if (displayEntry.lastUpdated) { html += `<p class="glossary-last-updated"><strong>Last Updated:</strong> ${displayEntry.lastUpdated}</p>`; }
-        if (displayEntry.rootsAndAffixes) { html += `<p class="glossary-roots"><strong>Roots & Affixes:</strong> ${displayEntry.rootsAndAffixes}</p>`; }
+
+        if (displayEntry.videoLink) {
+            html += `<p class="glossary-video-link"><a href="${displayEntry.videoLink}" target="_blank">Watch Video 🎬</a></p>`;
+        }
+
+        if (displayEntry.synonyms?.length) {
+            html += `<p class="glossary-synonyms"><strong>Synonyms:</strong> ${displayEntry.synonyms.join(', ')}</p>`;
+        }
+
+        if (displayEntry.antonyms?.length) {
+            html += `<p class="glossary-antonyms"><strong>Antonyms:</strong> ${displayEntry.antonyms.join(', ')}</p>`;
+        }
+
+        if (displayEntry.etymology) {
+            html += `<p class="glossary-etymology"><strong>Etymology:</strong> ${displayEntry.etymology}</p>`;
+        }
+
+        if (displayEntry.category) {
+            html += `<p class="glossary-category"><strong>Category:</strong> ${displayEntry.category}</p>`;
+        }
+
+        if (displayEntry.source) {
+            html += `<p class="glossary-source"><strong>Source:</strong> ${displayEntry.source}</p>`;
+        }
+
+        if (displayEntry.notes) {
+            html += `<p class="glossary-notes"><strong>Note:</strong> ${displayEntry.notes}</p>`;
+        }
+
+        if (displayEntry.level) {
+            html += `<p class="glossary-level"><strong>Level:</strong> ${displayEntry.level}</p>`;
+        }
+
+        if (displayEntry.frequency !== undefined) {
+            html += `<p class="glossary-frequency"><strong>Frequency:</strong> COCA ${displayEntry.frequency}</p>`;
+        }
+
+        if (displayEntry.lastUpdated) {
+            html += `<p class="glossary-last-updated"><strong>Last Updated:</strong> ${displayEntry.lastUpdated}</p>`;
+        }
+        if (displayEntry.rootsAndAffixes) {
+            html += `<p class="glossary-roots"><strong>Roots & Affixes:</strong> ${displayEntry.rootsAndAffixes}</p>`;
+        }
 
         html += `</div>`;
+        
         _glossaryPopup.querySelector('#glossary-definition').innerHTML = html;
         
         // 💡 新增：保存当前被点击的元素，用于resize时重新定位
