@@ -9,33 +9,45 @@ EnglishSite.AudioSync = (() => {
     let _currentIndex = -1;
     let _previousHighlightedElement = null;
 
-    // ... parseSrt 和 timeToSeconds 函数保持不变 ...
+    // SRT解析函数
     const parseSrt = (srtText) => {
         const lines = srtText.split(/\r?\n/);
         const cues = [];
         let currentCue = null;
+
         for (let i = 0; i < lines.length; i++) {
             const line = lines[i].trim();
+
             if (!line) {
-                if (currentCue) { cues.push(currentCue); currentCue = null; }
+                if (currentCue) {
+                    cues.push(currentCue);
+                    currentCue = null;
+                }
             } else if (!isNaN(parseInt(line, 10)) && !currentCue) {
-                currentCue = { id: line };
+                currentCue = { id: line }; // Assuming first line of a cue is its ID
             } else if (line.includes('-->') && currentCue) {
                 const parts = line.split('-->');
                 currentCue.startTime = timeToSeconds(parts[0].trim());
                 currentCue.endTime = timeToSeconds(parts[1].trim());
-                currentCue.text = '';
+                currentCue.text = ''; // Initialize text
             } else if (currentCue) {
                 currentCue.text += (currentCue.text ? '\n' : '') + line;
             }
         }
-        if (currentCue) { cues.push(currentCue); }
+        if (currentCue) {
+            cues.push(currentCue);
+        }
         return cues;
     };
+
     const timeToSeconds = (timeString) => {
         const parts = timeString.split(':');
         const secondsParts = parts[2].split(',');
-        return (parseInt(parts[0], 10) * 3600) + (parseInt(parts[1], 10) * 60) + parseInt(secondsParts[0], 10) + (parseInt(secondsParts[1], 10) / 1000);
+        const hours = parseInt(parts[0], 10);
+        const minutes = parseInt(parts[1], 10);
+        const seconds = parseInt(secondsParts[0], 10);
+        const milliseconds = parseInt(secondsParts[1], 10);
+        return (hours * 3600) + (minutes * 60) + seconds + (milliseconds / 1000);
     };
 
     const init = (contentArea, srtText, audioPlayer) => {
@@ -49,7 +61,7 @@ EnglishSite.AudioSync = (() => {
         _audioPlayer.addEventListener('ended', handleAudioEnded);
         console.log('[AudioSync] 初始化成功 (使用优化算法)。SRT数据:', _srtData);
     };
-    
+
     // 🚀 新增：二分搜索函数，用于快速定位跳转后的字幕
     const binarySearchForCue = (time) => {
         let low = 0;
@@ -64,14 +76,10 @@ EnglishSite.AudioSync = (() => {
             } else if (time < cue.startTime) {
                 high = mid - 1;
             } else {
-                // 即使当前时间大于 cue.endTime，它也可能是一个潜在的匹配
-                // (例如，如果时间落在两个cue的间隙中)
                 bestMatch = mid; 
                 low = mid + 1;
             }
         }
-        // 如果没有精确匹配，返回最接近的一个
-        // 检查 bestMatch 是否真的匹配
         if (bestMatch !== -1) {
             const cue = _srtData[bestMatch];
             if (time >= cue.startTime && time < cue.endTime) {
@@ -113,49 +121,70 @@ EnglishSite.AudioSync = (() => {
             updateHighlight(newIndex);
             _currentIndex = newIndex;
         } else if (newIndex === -1 && _previousHighlightedElement) {
-             // 如果找不到任何匹配的cue (例如在句子间隙或结尾)，则移除高亮
             removeHighlight(_previousHighlightedElement);
             _currentIndex = -1;
         }
     };
 
-
-    // ... updateHighlight, removeHighlight, scrollToView, handleAudioEnded, cleanup 函数保持不变 ...
     const updateHighlight = (newIndex) => {
-        if (_previousHighlightedElement) { removeHighlight(_previousHighlightedElement); }
+        if (_previousHighlightedElement) {
+            removeHighlight(_previousHighlightedElement);
+        }
         const currentCue = _srtData[newIndex];
         const targetElement = _contentArea.querySelector(`[data-sentence-id="${currentCue.id}"]`);
         if (targetElement) {
             targetElement.classList.add('highlighted');
             _previousHighlightedElement = targetElement;
             scrollToView(targetElement);
+        } else {
+            console.warn(`[AudioSync] 未找到 ID 为 "${currentCue.id}" 的句子元素。`);
         }
     };
-    const removeHighlight = (element) => { if (element) { element.classList.remove('highlighted'); } };
+
+    const removeHighlight = (element) => {
+        if (element) {
+            element.classList.remove('highlighted');
+        }
+    };
+
     const scrollToView = (element) => {
         const rect = element.getBoundingClientRect();
         const contentRect = _contentArea.getBoundingClientRect();
         if (rect.top < contentRect.top || rect.bottom > contentRect.bottom) {
             const scrollPosition = element.offsetTop - _contentArea.offsetTop - (_contentArea.clientHeight / 2) + (rect.height / 2);
-            _contentArea.scrollTo({ top: scrollPosition, behavior: 'smooth' });
+            _contentArea.scrollTo({
+                top: scrollPosition,
+                behavior: 'smooth'
+            });
         }
     };
+
     const handleAudioEnded = () => {
-        if (_previousHighlightedElement) { removeHighlight(_previousHighlightedElement); }
+        console.log('[AudioSync] 音频播放结束。');
+        if (_previousHighlightedElement) {
+            removeHighlight(_previousHighlightedElement);
+        }
         _currentIndex = -1;
     };
+
     const cleanup = () => {
         if (_audioPlayer) {
             _audioPlayer.removeEventListener('timeupdate', handleTimeUpdateOptimized);
             _audioPlayer.removeEventListener('ended', handleAudioEnded);
         }
-        if (_previousHighlightedElement) { removeHighlight(_previousHighlightedElement); }
+        if (_previousHighlightedElement) {
+            removeHighlight(_previousHighlightedElement);
+        }
         _contentArea = null;
         _audioPlayer = null;
         _srtData = [];
         _currentIndex = -1;
         _previousHighlightedElement = null;
+        console.log('[AudioSync] 已清理。');
     };
 
-    return { init: init, cleanup: cleanup };
+    return {
+        init: init,
+        cleanup: cleanup
+    };
 })();
