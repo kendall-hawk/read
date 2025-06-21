@@ -1,1 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>English Site</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            margin: 0;
+            padding: 0;
+        }
 
+        #main-nav {
+            background-color: #f5f5f5;
+            border-bottom: 1px solid #ddd;
+            padding: 10px;
+        }
+
+        .main-nav-list {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            gap: 1rem;
+        }
+
+        .main-nav-list li a {
+            text-decoration: none;
+            color: #333;
+            padding: 5px 10px;
+        }
+
+        .main-nav-list li a.active {
+            font-weight: bold;
+            color: #007acc;
+        }
+
+        #content {
+            padding: 20px;
+        }
+
+        .chapter-list-overview {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .chapter-overview-item {
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            overflow: hidden;
+            width: 240px;
+            text-align: center;
+            background-color: #fff;
+            transition: box-shadow 0.3s;
+        }
+
+        .chapter-overview-item:hover {
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+
+        .chapter-overview-item img {
+            width: 100%;
+            height: auto;
+        }
+
+        .chapter-info {
+            padding: 10px;
+        }
+
+        .chapter-info h3 {
+            margin: 0;
+            font-size: 16px;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="main-nav"></div>
+    <div id="content"></div>
+
+    <script>
+        // 模拟 navigation.json
+        const navData = [
+            {
+                "series": "BBC English",
+                "seriesId": "beginner",
+                "chapters": [
+                    {
+                        "id": "chap1",
+                        "title": "What's your favourite kind of noodle?",
+                        "audio": true,
+                        "thumbnail": "https://img.youtube.com/vi/dQw4w9WgXcQ/0.jpg"
+                    }
+                ]
+            }
+        ];
+
+        // 简化的 Navigation 模块
+        window.EnglishSite = window.EnglishSite || {};
+        EnglishSite.Navigation = (() => {
+            const _seriesLinksMap = new Map();
+            let _navContainer = null;
+
+            const init = (navContainer, navData) => {
+                _navContainer = navContainer;
+
+                const ul = document.createElement('ul');
+                ul.classList.add('main-nav-list');
+
+                navData.forEach(series => {
+                    const li = document.createElement('li');
+                    const a = document.createElement('a');
+                    a.href = `#series=${series.seriesId}`;
+                    a.textContent = series.series;
+                    a.dataset.seriesId = series.seriesId;
+                    a.classList.add('series-link');
+                    li.appendChild(a);
+                    ul.appendChild(li);
+                    _seriesLinksMap.set(series.seriesId, a);
+
+                    a.addEventListener('click', (e) => {
+                        e.preventDefault();
+                        setActiveSeries(series.seriesId);
+                        history.pushState({ type: 'series', id: series.seriesId }, '', `#series=${series.seriesId}`);
+                    });
+                });
+
+                _navContainer.appendChild(ul);
+
+                const currentHash = location.hash.substring(1);
+                if (currentHash.startsWith('series=')) {
+                    const sid = currentHash.split('=')[1];
+                    setActiveSeries(sid);
+                } else {
+                    setActiveSeries(navData[0].seriesId);
+                }
+
+                window.addEventListener('popstate', (event) => {
+                    const state = event.state;
+                    if (state?.type === 'series') {
+                        setActiveSeries(state.id);
+                    }
+                });
+            };
+
+            const setActiveSeries = (seriesId) => {
+                _seriesLinksMap.forEach(link => link.classList.remove('active'));
+                const link = _seriesLinksMap.get(seriesId);
+                if (link) link.classList.add('active');
+
+                const series = navData.find(s => s.seriesId === seriesId);
+                if (series) {
+                    document.dispatchEvent(new CustomEvent('seriesSelected', {
+                        detail: {
+                            seriesId: series.seriesId,
+                            chapters: series.chapters
+                        }
+                    }));
+                }
+            };
+
+            return { init };
+        })();
+
+        // Main.js 示例部分
+        document.addEventListener('DOMContentLoaded', () => {
+            const navContainer = document.getElementById('main-nav');
+            const contentArea = document.getElementById('content');
+
+            EnglishSite.Navigation.init(navContainer, navData);
+
+            document.addEventListener('seriesSelected', (event) => {
+                const { seriesId, chapters } = event.detail;
+                console.log('[main] 系列被选中:', seriesId, chapters);
+
+                const seriesName = navData.find(s => s.seriesId === seriesId)?.series || 'Unknown';
+                let html = `<h2>${seriesName}</h2><div class="chapter-list-overview">`;
+
+                chapters.forEach(chapter => {
+                    const thumb = chapter.thumbnail || 'https://via.placeholder.com/240x135?text=No+Image';
+                    html += `
+                        <div class="chapter-overview-item">
+                            <a href="#${chapter.id}">
+                                <img src="${thumb}" alt="${chapter.title}">
+                                <div class="chapter-info">
+                                    <h3>${chapter.title} ${chapter.audio ? '🎵' : ''}</h3>
+                                </div>
+                            </a>
+                        </div>`;
+                });
+
+                html += '</div>';
+                contentArea.innerHTML = html;
+            });
+        });
+    </script>
+</body>
+</html>
