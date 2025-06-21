@@ -1,10 +1,22 @@
-// js/main.js (最终的、功能完整的版本)
+// js/main.js (集成了变速播放和点击跳转的最终版本)
 
 document.addEventListener('DOMContentLoaded', async () => {
     const navContainer = document.getElementById('main-nav');
     const contentArea = document.getElementById('content');
+    const playerSection = document.getElementById('player-section');
+    const audioPlayer = document.getElementById('chapter-audio');
+    const speedControls = document.getElementById('speed-controls');
+    
     let navData = [];
-    let audioPlayer = null;
+
+    speedControls.addEventListener('click', (e) => {
+        if (e.target.classList.contains('speed-btn')) {
+            const newSpeed = parseFloat(e.target.dataset.speed);
+            audioPlayer.playbackRate = newSpeed;
+            speedControls.querySelector('.active')?.classList.remove('active');
+            e.target.classList.add('active');
+        }
+    });
 
     try {
         const response = await fetch('data/navigation.json');
@@ -12,20 +24,16 @@ document.addEventListener('DOMContentLoaded', async () => {
         navData = await response.json();
     } catch (error) {
         console.error('[main.js] 加载导航数据失败:', error);
-        contentArea.innerHTML = `<div style="color: red; padding: 20px;">抱歉，导航菜单加载失败。请检查文件或网络连接。</div>`;
+        contentArea.innerHTML = `<div style="color: red; padding: 20px;">抱歉，导航菜单加载失败。</div>`;
         return;
     }
 
-    // --- 事件监听器 ---
-
     document.addEventListener('seriesSelected', (event) => {
         const { seriesId, chapters } = event.detail;
-        
-        // 所有模块均已就位，直接调用 cleanup
+
         EnglishSite.Glossary.cleanup();
         EnglishSite.AudioSync.cleanup();
-
-        if (audioPlayer) audioPlayer.style.display = 'none';
+        playerSection.style.display = 'none';
 
         const currentSeriesName = navData.find(s => s.seriesId === seriesId)?.series || '未知系列';
         let seriesContentHtml = `<h2>${currentSeriesName}</h2>`;
@@ -53,23 +61,19 @@ document.addEventListener('DOMContentLoaded', async () => {
     document.addEventListener('chapterLoaded', async (event) => {
         const { chapterId, hasAudio } = event.detail;
 
-        // 所有模块均已就位，直接调用 cleanup 和 init
         EnglishSite.Glossary.cleanup();
         EnglishSite.AudioSync.cleanup();
         
         EnglishSite.Glossary.init(contentArea, chapterId);
         EnglishSite.Navigation.setActiveChapter(chapterId);
-
-        if (!audioPlayer) {
-            audioPlayer = document.createElement('audio');
-            audioPlayer.id = 'chapter-audio';
-            audioPlayer.controls = true;
-            contentArea.insertBefore(audioPlayer, contentArea.firstChild);
-        }
         
         if (hasAudio) {
-            audioPlayer.style.display = 'block';
+            playerSection.style.display = 'flex'; // Use flex to match CSS
             audioPlayer.src = `audio/${chapterId}.mp3`;
+            // Reset speed to 1x and update button UI for new audio
+            audioPlayer.playbackRate = 1.0;
+            speedControls.querySelector('.active')?.classList.remove('active');
+            speedControls.querySelector('[data-speed="1.0"]')?.classList.add('active');
             audioPlayer.load();
 
             try {
@@ -78,17 +82,18 @@ document.addEventListener('DOMContentLoaded', async () => {
                 const srtText = await srtResponse.text();
                 EnglishSite.AudioSync.init(contentArea, srtText, audioPlayer);
             } catch (e) {
-                console.error('[main.js] 加载或解析 SRT 文件失败，音频同步功能将不可用:', e);
+                console.error('[main.js] 加载或解析 SRT 文件失败:', e);
             }
         } else {
-            audioPlayer.style.display = 'none';
+            playerSection.style.display = 'none';
         }
     });
 
     document.addEventListener('chapterLoadError', (event) => {
-        console.error(`[main.js] 章节加载遇到错误`, event.detail);
+        console.error(`[main.js] 章节加载错误`, event.detail);
         EnglishSite.Glossary.cleanup();
         EnglishSite.AudioSync.cleanup();
+        playerSection.style.display = 'none';
     });
 
     const handleChapterNavigation = (chapterId) => {
@@ -98,10 +103,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     document.addEventListener('initialChapterLoad', (e) => handleChapterNavigation(e.detail.chapterId));
     document.addEventListener('popstateChapterLoad', (e) => handleChapterNavigation(e.detail.chapterId));
 
-    // --- 核心初始化 ---
     EnglishSite.Navigation.init(navContainer, navData);
 
-    // --- 辅助函数 ---
     const handleOverviewChapterLinkClick = (event) => {
         const link = event.target.closest('.overview-chapter-link');
         if (link) {
