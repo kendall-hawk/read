@@ -16,7 +16,15 @@ body {
     background-color: var(--background-color);
     color: var(--text-color);
 }
+[data-sentence-id] {
+  display: block; /* 强制每句换行，但仍在同一段 <p> 中 */
+  margin: 0.2em 0;
+}
 
+[data-sentence-id].active {
+  background-color: #fff3cd;
+  color: #d63384;
+}
 .site-header {
     background-color: white;
     padding: 20px 40px;
