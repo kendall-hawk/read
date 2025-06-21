@@ -1,10 +1,14 @@
 [
-    {
-        "seriesId": "basic-english",
-        "series": "基础英语",
-        "chapters": [
-            { "id": "chap1", "name": "章节 1: 问候语", "file": "chap1.html", "audio": true, "thumbnail": "https://example.com/images/chap1_thumb.jpg" },
-            { "id": "chap2", "name": "章节 2: 自我介绍", "file": "chap2.html", "audio": true, "thumbnail": "https://example.com/images/chap2_thumb.jpg" }
-        ]
-    }
+  {
+    "series": "BBC English",
+    "seriesId": "beginner",
+    "chapters": [
+      {
+        "id": "chap1",
+        "name": "第一章：基础对话",
+        "audio": true,
+        "thumbnail": "images/placeholders/default_thumb.jpg"
+      }
+    ]
+  }
 ]
